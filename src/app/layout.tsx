@@ -3,6 +3,7 @@ import type { Viewport } from 'next'
 import "./globals.css";
 import { homeMetadata } from './lib/seo/home'
 import { ThemeProvider } from './providers/ThemeProvider'
+import { Header } from './components/layout/Header'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          {children}
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>
