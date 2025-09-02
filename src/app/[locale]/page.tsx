@@ -3,6 +3,7 @@ import HomeClient from "../components/home/homeClient";
 import { GoogleSignInButton, GitHubSignInButton } from "../components/auth/SignInButton";
 import SignOutButton from "../components/auth/SignOutButton";
 import { getCurrentSession, isAuthenticated } from "../lib/auth";
+import ThemeToggle from "../components/ui/ThemeToggle";
 
 // This page handles localized routes like /en, /es, etc.
 export default async function LocaleHomePage() {
@@ -11,21 +12,26 @@ export default async function LocaleHomePage() {
   const authenticated = await isAuthenticated();
 
   return (
-    <div className="min-h-screen bg-background-light ">
+    <div className="min-h-screen bg-[var(--color-app-background)]">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
+          {/* Theme Toggle */}
+          <div className="flex justify-end mb-6">
+            <ThemeToggle />
+          </div>
+
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-extrabold text-foreground-light dark:text-foreground-dark sm:text-5xl">
+            <h1 className="text-4xl font-extrabold text-[var(--color-app-foreground)] sm:text-5xl">
               Bienvenido a la App
             </h1>
-            <p className="mt-4 text-xl text-text-secondary-light dark:text-text-secondary-dark">
+            <p className="mt-4 text-xl text-[var(--color-text-secondary)]">
               Sistema de autenticación con NextAuth.js
             </p>
           </div>
 
           {/* Authentication Section */}
-          <div className="mt-12 shadow-lg rounded-lg bg-neutral-light dark:bg-neutral-dark border border-border-light dark:border-border-dark">
+          <div className="mt-12 shadow-lg rounded-lg bg-[var(--color-neutral)] border border-[var(--color-border)]">
             <div className="px-4 py-5 sm:p-6">
               {authenticated && session?.user ? (
                 // Usuario autenticado
@@ -38,10 +44,10 @@ export default async function LocaleHomePage() {
                         alt={session.user.name || 'Usuario'}
                       />
                     )}
-                    <h2 className="mt-4 text-2xl font-bold text-foreground-light dark:text-foreground-dark">
+                    <h2 className="mt-4 text-2xl font-bold text-[var(--color-app-foreground)]">
                       ¡Hola, {session.user.name || session.user.email}!
                     </h2>
-                    <p className="mt-2 text-text-secondary-light dark:text-text-secondary-dark">
+                    <p className="mt-2 text-[var(--color-text-secondary)]">
                       Has iniciado sesión correctamente
                     </p>
                   </div>
@@ -74,10 +80,10 @@ export default async function LocaleHomePage() {
                 // Usuario no autenticado
                 <div className="text-center">
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-foreground-light dark:text-foreground-dark">
+                    <h2 className="text-2xl font-bold text-[var(--color-app-foreground)]">
                       Iniciar Sesión
                     </h2>
-                    <p className="mt-2 text-text-secondary-light dark:text-text-secondary-dark">
+                    <p className="mt-2 text-[var(--color-text-secondary)]">
                       Elige tu método de autenticación preferido
                     </p>
                   </div>

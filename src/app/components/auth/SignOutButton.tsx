@@ -30,10 +30,10 @@ export default function SignOutButton({
     inline-flex items-center justify-center
     px-6 py-3 border border-transparent
     text-sm font-medium rounded-lg shadow-sm
-    text-foreground-dark bg-secondary hover:bg-amber-700
-    dark:text-foreground-light dark:bg-secondary dark:hover:bg-amber-600
+    text-[var(--color-text-primary)] bg-secondary hover:bg-amber-700
+    dark:bg-secondary dark:hover:bg-amber-600
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary
-    dark:focus:ring-offset-background-dark
+    dark:focus:ring-offset-[var(--color-app-background)]
     disabled:opacity-50 disabled:cursor-not-allowed
     transition-all duration-200 ease-in-out
     hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
@@ -67,12 +67,12 @@ export default function SignOutButton({
 export function SignOutButtonSecondary(props: SignOutButtonProps) {
   const secondaryStyles = `
     inline-flex items-center justify-center
-    px-6 py-3 border border-border-light dark:border-border-dark
+    px-6 py-3 border border-[var(--color-border)] dark:border-[var(--color-border)]
     text-sm font-medium rounded-lg shadow-sm
-    text-text-primary-light bg-neutral-light hover:bg-amber-50
-    dark:text-text-primary-dark dark:bg-neutral-dark dark:hover:bg-gray-800
+    text-[var(--color-text-primary)] bg-[var(--color-neutral-light)] hover:bg-amber-50
+    dark:bg-[var(--color-neutral-dark)] dark:hover:bg-gray-800
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary
-    dark:focus:ring-offset-background-dark
+    dark:focus:ring-offset-[var(--color-app-background)]
     disabled:opacity-50 disabled:cursor-not-allowed
     transition-all duration-200 ease-in-out
     hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
@@ -96,8 +96,8 @@ export function SignOutButtonLink(props: SignOutButtonProps) {
   const linkStyles = `
     inline-flex items-center
     text-sm font-medium
-    text-text-secondary-light hover:text-secondary
-    dark:text-text-secondary-dark dark:hover:text-amber-400
+    text-[var(--color-text-secondary)] hover:text-secondary
+    dark:hover:text-amber-400
     focus:outline-none focus:underline focus:underline-offset-4
     disabled:opacity-50 disabled:cursor-not-allowed
     transition-all duration-200 ease-in-out

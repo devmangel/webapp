@@ -6,7 +6,7 @@ module.exports = {
         "./src/app/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {
+        extend: {           
             clipPath: {
                 myCustomShape: "polygon(0 0, 100% 0, 100% 50%, 0 100%)",
             },

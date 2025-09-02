@@ -11,34 +11,24 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   
-  /* Custom Color Palette */
+  /* Reactive Color Variables - Light Mode (Default) */
   --color-primary: #fbbf24;
   --color-secondary: #d97706;
   --color-accent-primary: #fbbf24;
   --color-accent-secondary: #0d9488;
   
-  /* Gray Scale */
+  /* Theme-Reactive Variables */
+  --color-app-background: #F9FAFB;
+  --color-app-foreground: #111827;
+  --color-text-primary: #1B1B1B;
+  --color-text-secondary: #6B7280;
+  --color-neutral: #F9FAFB;
+  --color-border: #E5E7EB;
+  
+  /* Static Colors */
   --color-gray-300: #D1D5DB;
   --color-gray-600: #4B5563;
   --color-gray-900: #111827;
-  
-  /* Backgrounds */
-  --color-background-light: #F9FAFB;
-  --color-background-dark: #1B1B1B;
-  
-  /* Foregrounds */
-  --color-foreground-light: #111827;
-  --color-foreground-dark: #fef3c7;
-  
-  /* Text Colors */
-  --color-text-primary-light: #4B5563;
-  --color-text-primary-dark: #E5E7EB;
-  --color-text-secondary-light: #6B7280;
-  --color-text-secondary-dark: #9CA3AF;
-  
-  /* Border Colors */
-  --color-border-light: #E5E7EB;
-  --color-border-dark: #4B5563;
   
   /* Amber Scale */
   --color-amber-50: #fffbeb;
@@ -54,7 +44,17 @@
   --color-amber-950: #451a03;
 }
 
-@media (prefers-color-scheme: light) {
+/* Dark Mode Overrides */
+.dark {
+  --color-app-background: #1B1B1B;
+  --color-app-foreground: #fef3c7;
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #9CA3AF;
+  --color-neutral: #1B1B1B;
+  --color-border: #4B5563;
+}
+
+@media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
