@@ -1,0 +1,10 @@
+1. **Never read `.env` files.** Treat them as secrets. Do **not** access them from client code; only use server-side envs and expose **only** `NEXT_PUBLIC_*` at build time when truly necessary.
+2. **Always write clean code and follow SOLID.** Small, single-purpose components; clear naming; DRY; no dead code; refactor relentlessly.
+3. **Favor App Router + Server Components by default.** Push work to the server; keep `"use client"` minimal; stream with Suspense; choose Edge/Node runtime intentionally.
+4. **Isolate secrets behind BFF endpoints.** Use Route Handlers and/or Server Actions for all privileged calls. Never call private APIs or databases directly from the client.
+5. **Enforce quality gates in CI.** TypeScript **strict** mode, ESLint, Prettier, unit tests, type-check, and build must all pass before merge. Fail on warnings.
+6. **Hit performance budgets and Core Web Vitals.** Cap initial JS (e.g., \~<100KB), prefer RSC over client state, `next/image`, `next/font`, dynamic imports, code-splitting, and cache/revalidate deliberately.
+7. **Design for accessibility and i18n from day 0.** Semantic HTML, keyboard nav, ARIA, color-contrast (WCAG AA), RTL/LTR support, and locale-aware routing and formatting.
+8. **Handle data like a pro.** Centralize fetches, dedupe requests, set clear cache policies (`revalidate`, tags), provide optimistic UI with rollback, and show proper loading/error states with boundaries.
+9. **Bake in security.** Strict CSP, HTTPS, secure/HttpOnly cookies, SameSite, CSRF on mutations, input/output sanitization, dependency auditing, and zero `eval`/dangerous HTML.
+10. **Test and observe in production.** Unit + integration + E2E (Playwright/RTL), mock networks (e.g., MSW), feature flags, structured logging, error tracking (e.g., Sentry), and real-user monitoring of CWV.
