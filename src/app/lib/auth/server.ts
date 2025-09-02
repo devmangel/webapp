@@ -3,9 +3,7 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { UserSession, AuthProvider, SignInOptions } from '../../../types/auth'
-
-export const DEFAULT_CALLBACK_URL = '/'
-export const DEFAULT_SIGNIN_URL = '/auth/signin'
+import { DEFAULT_CALLBACK_URL, DEFAULT_SIGNIN_URL } from './utils'
 
 // ======================
 // SERVER SESSION FUNCTIONS

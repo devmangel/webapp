@@ -1,6 +1,7 @@
 'use client'
 
 import { signOutAction } from '../../lib/auth/server'
+import { DEFAULT_SIGNIN_URL } from '../../lib/auth/utils'
 
 interface SignOutButtonProps {
   callbackUrl?: string
