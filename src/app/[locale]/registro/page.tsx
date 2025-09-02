@@ -36,11 +36,11 @@ export default async function SignUpPage() {
 
           {/* Login Link */}
           <div className="mt-8 text-center">
-            <p className="text-sm text-[var(--color-text-secondary)]">
+            <p className="text-lg text-[var(--color-text-secondary)]">
               ¿Ya tienes una cuenta?{' '}
               <Link 
                 href="/iniciar-session" 
-                className="font-medium text-primary hover:text-secondary transition-colors duration-200"
+                className="font-bold text-primary hover:text-secondary transition-colors duration-200"
               >
                 Iniciar sesión
               </Link>

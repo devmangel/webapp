@@ -46,12 +46,12 @@ export default function SignupClient({ callbackUrl = "/dashboard" }: SignupClien
       </div>
 
       {/* Email Option */}
-      <div className="space-y-4 ">
+      <div className="space-y-4">
         {!showEmailForm ? (
           <button
             type="button"
             onClick={handleEmailToggle}
-            className="w-full inline-flex items-center justify-center px-6 py-3 border border-[var(--color-border)] text-sm font-medium rounded-lg shadow-sm text-[var(--color-text-primary)] bg-[var(--color-neutral-light)] hover:bg-[var(--color-neutral) focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-[var(--color-app-background)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] active:scale-[0.98] hover:cursor-pointer"
+            className="w-full inline-flex items-center justify-center px-6 py-3 border border-[var(--color-border)] text-sm font-medium rounded-lg shadow-sm text-[var(--color-text-primary)] bg-[var(--color-neutral-light)] hover:bg-amber-50 dark:bg-[var(--color-neutral-dark)] dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-[var(--color-app-background)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             disabled={isLoading}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@ export default function SignupClient({ callbackUrl = "/dashboard" }: SignupClien
                 <EmailSignInButton
                   email={email}
                   callbackUrl={callbackUrl}
-                  className="flex-1 px-4 py-2 text-sm font-medium"
+                  className="flex-1"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -112,7 +112,7 @@ export default function SignupClient({ callbackUrl = "/dashboard" }: SignupClien
       </div>
 
       {/* Terms and Privacy */}
-      <div className="text-xs text-center text-[var(--color-text-secondary)] space-y-2">
+      <div className="text-sm text-center text-[var(--color-text-secondary)] space-y-2">
         <p>
           Al registrarte, aceptas nuestros{' '}
           <Link href="/terminos" className="text-primary hover:text-secondary underline">

@@ -33,7 +33,7 @@ export default function SignInButton({
   }
 
   const defaultClassName = `
-    inline-flex items-center justify-center
+    w-full inline-flex items-center justify-center
     px-6 py-3 border border-transparent
     text-sm font-medium rounded-lg shadow-sm
     text-[var(--color-text-primary)] bg-primary hover:bg-secondary
@@ -63,7 +63,7 @@ export default function SignInButton({
 // Componentes especializados para cada provider
 export function GoogleSignInButton(props: Omit<SignInButtonProps, 'provider'>) {
   const googleStyles = `
-    inline-flex items-center justify-center
+    w-full inline-flex items-center justify-center
     px-6 py-3 border border-[var(--color-border)] dark:border-[var(--color-border)]
     text-sm font-medium rounded-lg shadow-sm
     text-[var(--color-text-primary)] bg-[var(--color-neutral)] hover:bg-[var(--color-app-background)]
@@ -99,7 +99,7 @@ export function GoogleSignInButton(props: Omit<SignInButtonProps, 'provider'>) {
 
 export function GitHubSignInButton(props: Omit<SignInButtonProps, 'provider'>) {
   const githubStyles = `
-    inline-flex items-center justify-center
+    w-full inline-flex items-center justify-center
     px-6 py-3 border border-gray-900 dark:border-gray-700
     text-sm font-medium rounded-lg shadow-sm
     text-white bg-gray-900 hover:bg-gray-800
@@ -133,7 +133,7 @@ export function GitHubSignInButton(props: Omit<SignInButtonProps, 'provider'>) {
 
 export function EmailSignInButton(props: Omit<SignInButtonProps, 'provider' | 'email'> & { email: string }) {
   const emailStyles = `
-    inline-flex items-center justify-center
+    w-full inline-flex items-center justify-center
     px-6 py-3 border border-[var(--color-accent-secondary)] dark:border-[var(--color-accent-secondary)]
     text-sm font-medium rounded-lg shadow-sm
     text-[var(--color-accent-secondary)] bg-[var(--color-neutral-light)] hover:bg-amber-50

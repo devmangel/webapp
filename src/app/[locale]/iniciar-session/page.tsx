@@ -1,4 +1,5 @@
 import React from "react"
+import Link from "next/link"
 import ThemeToggle from "../../components/ui/ThemeToggle"
 import LoginClient from "./loginClient"
 import { redirectToDashboard } from "../../lib/auth"
@@ -31,6 +32,19 @@ export default async function SignInPage() {
             <div className="px-4 py-5 sm:p-6">
               <LoginClient callbackUrl="/dashboard" />
             </div>
+          </div>
+
+          {/* Register Link */}
+          <div className="mt-8 text-center">
+            <p className="text-lg text-[var(--color-text-secondary)]">
+              ¿No tienes una cuenta?{' '}
+              <Link 
+                href="/registro" 
+                className="font-bold text-primary hover:text-secondary transition-colors duration-200"
+              >
+                Crear cuenta
+              </Link>
+            </p>
           </div>
         </div>
       </div>
