@@ -15,10 +15,10 @@ export default function SignOutButton({
   children,
   disabled = false
 }: SignOutButtonProps) {
-  
+
   const handleSignOut = async () => {
     if (disabled) return
-    
+
     try {
       await signOutAction(callbackUrl)
     } catch (error) {
@@ -40,9 +40,7 @@ export default function SignOutButton({
   `.trim().replace(/\s+/g, ' ')
 
   // Combine default styles with custom className
-  const combinedClassName = className 
-    ? `${defaultClassName} ${className}` 
-    : defaultClassName
+  const combinedClassName = className || defaultClassName
 
   return (
     <button
@@ -78,8 +76,8 @@ export function SignOutButtonSecondary(props: SignOutButtonProps) {
     hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
   `.trim().replace(/\s+/g, ' ')
 
-  const combinedClassName = props.className 
-    ? `${secondaryStyles} ${props.className}` 
+  const combinedClassName = props.className
+    ? `${secondaryStyles} ${props.className}`
     : secondaryStyles
 
   return (
@@ -99,13 +97,13 @@ export function SignOutButtonLink(props: SignOutButtonProps) {
     text-[var(--color-text-secondary)] hover:text-secondary
     dark:hover:text-amber-400
     focus:outline-none focus:underline focus:underline-offset-4
-    disabled:opacity-50 disabled:cursor-not-allowed
+    disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer
     transition-all duration-200 ease-in-out
     hover:scale-[1.02] active:scale-[0.98]
   `.trim().replace(/\s+/g, ' ')
 
-  const combinedClassName = props.className 
-    ? `${linkStyles} ${props.className}` 
+  const combinedClassName = props.className
+    ? `${linkStyles} ${props.className}`
     : linkStyles
 
   return (

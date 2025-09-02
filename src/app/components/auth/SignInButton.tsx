@@ -140,7 +140,7 @@ export function EmailSignInButton(props: Omit<SignInButtonProps, 'provider' | 'e
     dark:text-amber-200 dark:bg-[var(--color-neutral-dark)] dark:hover:bg-gray-800
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-accent-secondary)]
     dark:focus:ring-offset-[var(--color-app-background)]
-    disabled:opacity-50 disabled:cursor-not-allowed
+    disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer
     transition-all duration-200 ease-in-out
     hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
   `.trim().replace(/\s+/g, ' ')
