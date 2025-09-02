@@ -66,11 +66,10 @@ export function GoogleSignInButton(props: Omit<SignInButtonProps, 'provider'>) {
     inline-flex items-center justify-center
     px-6 py-3 border border-[var(--color-border)] dark:border-[var(--color-border)]
     text-sm font-medium rounded-lg shadow-sm
-    text-[var(--color-text-primary)] bg-[var(--color-neutral-light)] hover:bg-amber-50
-    dark:bg-[var(--color-neutral-dark)] dark:hover:bg-white
+    text-[var(--color-text-primary)] bg-[var(--color-neutral)] hover:bg-[var(--color-app-background)]
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary
     dark:focus:ring-offset-[var(--color-app-background)]
-    disabled:opacity-50 disabled:cursor-not-allowed
+    disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer
     transition-all duration-200 ease-in-out
     hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
   `.trim().replace(/\s+/g, ' ')
@@ -107,7 +106,7 @@ export function GitHubSignInButton(props: Omit<SignInButtonProps, 'provider'>) {
     dark:bg-gray-800 dark:hover:bg-gray-700
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700
     dark:focus:ring-offset-[var(--color-app-background)] dark:focus:ring-gray-600
-    disabled:opacity-50 disabled:cursor-not-allowed
+    disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer
     transition-all duration-200 ease-in-out
     hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
   `.trim().replace(/\s+/g, ' ')
