@@ -1,0 +1,22 @@
+#
+#       o     O
+#     __|_____|___
+#    |    --      |
+#    |  ( o )   ( o )
+#  { |        /   |
+#    |     [wwww]  < *I will exterminate all humans.txt* )
+#    [____________|
+#       |   |              /Vvvv/
+#  _____|___|____          |___/
+# /______________\_________/   |
+# |              |             /
+# | ( / )  ( + ) |__|__|__|_|_/
+# |              |
+# | [ -vV--vV-]  |
+# |              |
+# |______________/
+#
+
+User-agent: *
+Disallow: /private/
+Sitemap: https://productos-ai.com/sitemap.xml

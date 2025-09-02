@@ -1,0 +1,23 @@
+import { createSharedPathnamesNavigation } from 'next-intl/navigation';
+import { defineRouting } from 'next-intl/routing';
+
+// Configuración de idiomas
+export const routing = defineRouting({
+  locales: ["en", "es", "zh", "ar"] as const,
+  defaultLocale: "en" as const,
+  // Usar prefijo de locale solo cuando sea necesario
+  localePrefix: "always",
+  // Habilitar detección de locale
+  localeDetection: false
+});
+
+// APIs de navegación traducidas
+export const { Link, redirect, usePathname, useRouter } = createSharedPathnamesNavigation(routing);
+
+// Exportar tipo para validación de locales
+export type Locale = typeof routing.locales[number];
+
+// Función helper para validación de tipo
+export function isValidLocale(locale: string): locale is Locale {
+  return routing.locales.includes(locale as Locale);
+}
