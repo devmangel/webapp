@@ -11,21 +11,21 @@ export default async function LocaleHomePage() {
   const authenticated = await isAuthenticated();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background-light ">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-extrabold text-foreground-light dark:text-foreground-dark sm:text-5xl">
               Bienvenido a la App
             </h1>
-            <p className="mt-4 text-xl text-gray-600">
+            <p className="mt-4 text-xl text-text-secondary-light dark:text-text-secondary-dark">
               Sistema de autenticación con NextAuth.js
             </p>
           </div>
 
           {/* Authentication Section */}
-          <div className="mt-12 bg-white shadow rounded-lg">
+          <div className="mt-12 shadow-lg rounded-lg bg-neutral-light dark:bg-neutral-dark border border-border-light dark:border-border-dark">
             <div className="px-4 py-5 sm:p-6">
               {authenticated && session?.user ? (
                 // Usuario autenticado
@@ -38,10 +38,10 @@ export default async function LocaleHomePage() {
                         alt={session.user.name || 'Usuario'}
                       />
                     )}
-                    <h2 className="mt-4 text-2xl font-bold text-gray-900">
+                    <h2 className="mt-4 text-2xl font-bold text-foreground-light dark:text-foreground-dark">
                       ¡Hola, {session.user.name || session.user.email}!
                     </h2>
-                    <p className="mt-2 text-gray-600">
+                    <p className="mt-2 text-text-secondary-light dark:text-text-secondary-dark">
                       Has iniciado sesión correctamente
                     </p>
                   </div>
@@ -67,7 +67,6 @@ export default async function LocaleHomePage() {
                     
                     <SignOutButton 
                       callbackUrl="/"
-                      className="w-full"
                     />
                   </div>
                 </div>
@@ -75,42 +74,22 @@ export default async function LocaleHomePage() {
                 // Usuario no autenticado
                 <div className="text-center">
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-foreground-light dark:text-foreground-dark">
                       Iniciar Sesión
                     </h2>
-                    <p className="mt-2 text-gray-600">
+                    <p className="mt-2 text-text-secondary-light dark:text-text-secondary-dark">
                       Elige tu método de autenticación preferido
                     </p>
                   </div>
                   
                   <div className="space-y-4 max-w-sm mx-auto">
                     <GoogleSignInButton 
-                      callbackUrl="/dashboard"
-                      className="w-full"
+                      callbackUrl="/dashboard"                      
                     />
                     
                     <GitHubSignInButton 
-                      callbackUrl="/dashboard"
-                      className="w-full"
+                      callbackUrl="/dashboard"                      
                     />
-                    
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300" />
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-gray-500">
-                          O continúa como invitado
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <button
-                      type="button"
-                      className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                    >
-                      Continuar sin cuenta
-                    </button>
                   </div>
                 </div>
               )}
