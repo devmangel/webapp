@@ -7,7 +7,6 @@ export default createMiddleware(routing);
 // Limit middleware to localized paths and root for redirects
 export const config = {
   matcher: [
-    '/',
-    '/(en|es|zh|ar)/:path*'
+    '/'    
   ]
 };

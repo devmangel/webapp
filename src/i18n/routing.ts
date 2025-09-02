@@ -5,8 +5,8 @@ import { defineRouting } from 'next-intl/routing';
 export const routing = defineRouting({
   locales: ["en", "es", "zh", "ar"] as const,
   defaultLocale: "en" as const,
-  // Usar prefijo de locale solo cuando sea necesario
-  localePrefix: "always",
+  // Usar prefijo de locale solo cuando sea necesario (raíz usa el idioma por defecto)
+  localePrefix: "as-needed",
   // Habilitar detección de locale
   localeDetection: false
 });

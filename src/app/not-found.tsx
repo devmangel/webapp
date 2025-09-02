@@ -1,6 +1,8 @@
 import React from "react";
-import { Typography, Button, Card, CardBody } from "@material-tailwind/react";
 import Link from "next/link";
+import { Typography } from "components/ui/Typography";
+import { Button } from "components/ui/Button";
+import { Card, CardBody } from "components/ui/Card";
 
 interface ErrorCardProps {
   icon: string;
@@ -13,17 +15,7 @@ const contents = [
     buttonName: "Inicio",
     icon: "fa-home",
     link: "/",
-  },
-  {
-    buttonName: "Servicios",
-    icon: "fa-lock",
-    link: "/",
-  },
-  {
-    buttonName: "Contacto",
-    icon: "fa-message",
-    link: "/#contact",
-  },
+  }
 ];
 
 export function ErrorCard({ icon, buttonName, link }: ErrorCardProps) {
@@ -34,7 +26,7 @@ export function ErrorCard({ icon, buttonName, link }: ErrorCardProps) {
           <i className={`fas text-3xl ${icon}`} />
         </div>
         <Link href={link}>
-          <Button color="primary" isFullWidth>
+          <Button color="primary" className="w-full">
             {buttonName}
           </Button>
         </Link>
@@ -49,31 +41,19 @@ export function NotFound() {
       <div className="relative min-h-screen w-full ">
         <div className="grid min-h-screen px-8">
           <div className="container relative z-10 my-auto mx-auto grid place-items-center text-center">
-            <Typography
-              variant="h1"
-              color="primary"
-              className="text-4xl leading-snug lg:text-9xl"
-            >
+            <Typography variant="h1" className="text-primary leading-snug lg:text-9xl">
               Error 404
             </Typography>
-            <Typography
-              variant="h1"
-              color="primary"
-              className="mt-6 text-4xl !leading-snug lg:text-3xl text-foreground-light"
-            >
+            <Typography variant="h3" className="mt-6 !leading-snug lg:text-3xl text-foreground-light">
               Sorry, We Misplaced That Page
             </Typography>
-            <Typography
-              variant="lead"
-              color="primary"
-              className="mt-4 mb-6 w-full md:max-w-full lg:mb-12 lg:max-w-3xl text-gray-600"
-            >
+            <Typography variant="body1" className="mt-4 mb-6 w-full md:max-w-full lg:mb-12 lg:max-w-3xl text-gray-600">
               Our digital librarian seems to have misplaced the page you
               requested. Stay with us, and we&apos;ll help you rediscover it.{" "}
               <br /> <br />
               Here, instead, you&apos;ll find some useful links:
             </Typography>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-1 ">
               {contents.map(({ buttonName, icon, link }, index) => (
                 <ErrorCard key={index} buttonName={buttonName} icon={icon} link={link} />
               ))}
