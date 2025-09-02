@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import type { Viewport } from 'next'
 import "./globals.css";
 import { homeMetadata } from './lib/seo/home'
 
@@ -13,6 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = homeMetadata;
+
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+}
 
 export default function RootLayout({
   children,
