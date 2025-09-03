@@ -1,7 +1,6 @@
 import React from "react";
 
 import HomeClient from "../components/home/homeClient";
-import ThemeToggle from "../components/ui/ThemeToggle";
 import PrimaryButton from "../components/ui/PrimaryButton";
 
 // This page handles localized routes like /en, /es, etc.
@@ -10,10 +9,6 @@ export default async function LocaleHomePage() {
     <div className="min-h-screen bg-[var(--color-app-background)]">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          {/* Theme Toggle */}
-          <div className="flex justify-end mb-6">
-            <ThemeToggle />
-          </div>
 
           {/* Header */}
           <div className="text-center">
