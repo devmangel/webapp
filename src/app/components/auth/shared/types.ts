@@ -18,8 +18,8 @@ export interface AuthProvider {
 }
 
 export interface AuthPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     callbackUrl?: string
     error?: string
-  }
+  }>
 }

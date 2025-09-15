@@ -21,13 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export async function LoginPage({ searchParams }: AuthPageProps) {
   // Redirect authenticated users
   const session = await getCurrentSession()
+  
+  // Await searchParams for Next.js 15+
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  
   if (session?.user) {
-    const callbackUrl = searchParams?.callbackUrl || '/dashboard'
+    const callbackUrl = resolvedSearchParams?.callbackUrl || '/dashboard'
     redirect(callbackUrl)
   }
 
-  const callbackUrl = searchParams?.callbackUrl
-  const error = searchParams?.error
+  const callbackUrl = resolvedSearchParams?.callbackUrl
+  const error = resolvedSearchParams?.error
 
   return (
     <AuthLayout>
