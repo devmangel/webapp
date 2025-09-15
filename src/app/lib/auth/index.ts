@@ -13,15 +13,15 @@ export {
   redirectToHome,
   redirectToDashboard,
   hasRole,
-  getUserProfile,
-  DEFAULT_CALLBACK_URL,
-  DEFAULT_SIGNIN_URL
+  getUserProfile
 } from './server'
 
 // ======================
 // UTILITY FUNCTIONS
 // ======================
 export {
+  DEFAULT_CALLBACK_URL,
+  DEFAULT_SIGNIN_URL,
   AUTH_PROVIDERS,
   getAvailableProviders,
   getProviderDisplayName,
