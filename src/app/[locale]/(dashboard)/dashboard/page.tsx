@@ -5,7 +5,6 @@ interface DashboardPageProps {
 }
 
 export default async function DashboardHomePage({ params }: DashboardPageProps) {
-  const resolvedParams = params instanceof Promise ? await params : params;
-  const { locale } = resolvedParams;
+  const { locale } = await params;
   redirect(`/${locale}/dashboard/overview`);
 }

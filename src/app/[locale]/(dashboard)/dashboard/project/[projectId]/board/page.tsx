@@ -5,6 +5,6 @@ interface BoardPageProps {
 }
 
 export default async function BoardPage({ params }: BoardPageProps) {
-  const resolvedParams = params instanceof Promise ? await params : params;
+  const resolvedParams = await params;
   return <BoardContent projectId={resolvedParams.projectId} />;
 }

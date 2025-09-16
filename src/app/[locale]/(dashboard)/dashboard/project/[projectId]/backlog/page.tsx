@@ -5,6 +5,6 @@ interface BacklogPageProps {
 }
 
 export default async function BacklogPage({ params }: BacklogPageProps) {
-  const resolvedParams = params instanceof Promise ? await params : params;
+  const resolvedParams = await params;
   return <BacklogContent projectId={resolvedParams.projectId} />;
 }
