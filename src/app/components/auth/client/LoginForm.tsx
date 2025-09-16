@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { AuthProviders } from './AuthProviders'
 import { EmailForm } from './EmailForm'
 
@@ -89,12 +90,12 @@ export function LoginForm({ callbackUrl, error }: LoginFormProps) {
       {/* Sign Up Link */}
       <div className="text-center text-sm text-textSecondary-light dark:text-textSecondary-dark">
         ¿No tienes una cuenta?{' '}
-        <a
+        <Link
           href="/signup"
           className="font-medium text-primary hover:text-secondary transition-colors duration-200"
         >
           Regístrate aquí
-        </a>
+        </Link>
       </div>
     </div>
   )

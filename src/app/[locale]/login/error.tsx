@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { AuthLayout } from '../../components/auth/shared/AuthLayout'
 import { AuthCard } from '../../components/auth/shared/AuthCard'
 
@@ -47,7 +48,7 @@ export default function LoginError({ error, reset }: ErrorProps) {
               Intentar nuevamente
             </button>
 
-            <a
+            <Link
               href="/"
               className="w-full flex items-center justify-center px-4 py-3 border border-border-light dark:border-border-dark rounded-lg bg-background-light dark:bg-background-dark hover:bg-neutral-light dark:hover:bg-neutral-dark text-textPrimary-light dark:text-textPrimary-dark font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
@@ -55,14 +56,14 @@ export default function LoginError({ error, reset }: ErrorProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
               Ir al inicio
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/signup"
               className="w-full text-center text-textSecondary-light dark:text-textSecondary-dark hover:text-textPrimary-light dark:hover:text-textPrimary-dark transition-colors duration-200"
             >
               ¿No tienes cuenta? Regístrate aquí
-            </a>
+            </Link>
           </div>
         </div>
       </AuthCard>

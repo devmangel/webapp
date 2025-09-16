@@ -10,7 +10,7 @@ interface AuthProvidersProps {
 export function AuthProviders({ callbackUrl }: AuthProvidersProps) {
   const handleProviderSignIn = async (provider: string) => {
     try {
-      await signInAction(provider as any, { callbackUrl })
+      await signInAction(provider as 'google' | 'github' | 'facebook' | 'apple', { callbackUrl })
     } catch (error) {
       console.error('Error signing in:', error)
     }
