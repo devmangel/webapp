@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { AuthProviders } from './AuthProviders'
 import { EmailForm } from './EmailForm'
 
@@ -89,31 +90,31 @@ export function SignupForm({ callbackUrl, error }: SignupFormProps) {
       {/* Terms and Privacy */}
       <div className="text-xs text-textSecondary-light dark:text-textSecondary-dark text-center">
         Al registrarte, aceptas nuestros{' '}
-        <a
+        <Link
           href="/terminos"
           className="font-medium text-primary hover:text-secondary transition-colors duration-200"
         >
           Términos de Servicio
-        </a>{' '}
+        </Link>{' '}
         y{' '}
-        <a
+        <Link
           href="/privacidad"
           className="font-medium text-primary hover:text-secondary transition-colors duration-200"
         >
           Política de Privacidad
-        </a>
+        </Link>
         .
       </div>
 
       {/* Login Link */}
       <div className="text-center text-sm text-textSecondary-light dark:text-textSecondary-dark">
         ¿Ya tienes una cuenta?{' '}
-        <a
+        <Link
           href="/login"
           className="font-medium text-primary hover:text-secondary transition-colors duration-200"
         >
           Inicia sesión aquí
-        </a>
+        </Link>
       </div>
     </div>
   )
