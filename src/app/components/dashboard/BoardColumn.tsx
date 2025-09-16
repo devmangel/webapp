@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { clsx } from 'clsx';
-import { Issue, TeamMember } from '../types';
-import { BOARD_COLUMNS, ISSUE_STATUS_LABEL } from '../constants';
-import { IssueCard } from './IssueCard';
+import { Issue, TeamMember } from 'types/domain/dashboard';
+import { BOARD_COLUMNS, ISSUE_STATUS_LABEL } from './constants';
+import { IssueCard } from 'components/dashboard/IssueCard';
 
 interface BoardColumnProps {
   status: Issue['status'];

@@ -2,8 +2,8 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import { clsx } from 'clsx';
-import { BOARD_COLUMNS, ISSUE_STATUS_LABEL, ISSUE_TYPE_COLOR } from '../constants';
-import { Epic, Issue, IssueStatus, Sprint, TeamMember } from '../types';
+import { BOARD_COLUMNS, ISSUE_STATUS_LABEL, ISSUE_TYPE_COLOR } from './constants';
+import { Epic, Issue, IssueStatus, Sprint, TeamMember } from 'types/domain/dashboard';
 import { formatDateTime, formatPoints } from '../utils/format';
 import { IssueStatusBadge } from './IssueStatusBadge';
 

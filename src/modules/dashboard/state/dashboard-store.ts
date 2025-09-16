@@ -1,7 +1,6 @@
 'use client';
 
 import { create } from 'zustand';
-import { dashboardMockState, defaultFilters } from '../data/mock-data';
 import { AssignmentRule, AuditLogEntry, DashboardFilters, DashboardStateSnapshot, Issue, IssueStatus } from '../types';
 
 // Simple uuid fallback if the package is not available
@@ -11,8 +10,13 @@ function generateId() {
 
 export interface DashboardStore extends DashboardStateSnapshot {
   filters: DashboardFilters;
+  baseFilters: DashboardFilters;
   activeProjectId: string;
   selectedIssueId?: string;
+  isLoading: boolean;
+  isHydrated: boolean;
+  loadError?: string;
+  loadInitialState: () => Promise<void>;
   setProject: (projectId: string) => void;
   setFilters: (filters: Partial<DashboardFilters>) => void;
   resetFilters: () => void;
@@ -39,24 +43,90 @@ function createAuditEntry(params: Omit<AuditLogEntry, 'id' | 'createdAt'> & { cr
   };
 }
 
+const emptySnapshot: DashboardStateSnapshot = {
+  projects: {},
+  epics: {},
+  issues: {},
+  sprints: {},
+  team: {},
+  assignmentRules: {},
+  activity: [],
+};
+
+const emptyFilters: DashboardFilters = {
+  projectId: '',
+  sprintId: undefined,
+  assigneeId: undefined,
+  issueType: 'ALL',
+  labels: [],
+  searchTerm: '',
+};
+
 export const useDashboardStore = create<DashboardStore>((set, get) => ({
-  ...dashboardMockState,
-  filters: defaultFilters,
-  activeProjectId: defaultFilters.projectId,
+  ...emptySnapshot,
+  filters: emptyFilters,
+  baseFilters: emptyFilters,
+  activeProjectId: '',
   selectedIssueId: undefined,
+  isLoading: false,
+  isHydrated: false,
+  loadError: undefined,
+  loadInitialState: async () => {
+    const { isHydrated, isLoading } = get();
+    if (isHydrated || isLoading) return;
+
+    set({ isLoading: true, loadError: undefined });
+
+    try {
+      const response = await fetch('/api/dashboard/state', {
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudo obtener el estado del dashboard');
+      }
+
+      const data = await response.json();
+
+      set(() => ({
+        ...data.snapshot,
+        filters: data.filters,
+        baseFilters: data.filters,
+        activeProjectId: data.activeProjectId ?? data.filters.projectId ?? '',
+        isHydrated: true,
+        isLoading: false,
+        loadError: undefined,
+      }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error desconocido al cargar el dashboard';
+      set({
+        isLoading: false,
+        loadError: message,
+      });
+      console.error('[DashboardStore] loadInitialState error', error);
+    }
+  },
   setProject: (projectId) => {
-    const { projects } = get();
-    if (!projects[projectId]) return;
+    const { projects, isHydrated } = get();
+    if (!isHydrated || !projects[projectId]) return;
     const firstSprintId = projects[projectId].sprintIds[0];
-    set((state) => ({
-      filters: {
-        ...state.filters,
+    set((state) => {
+      const newFilters: DashboardFilters = {
+        ...state.baseFilters,
         projectId,
         sprintId: firstSprintId,
-      },
-      activeProjectId: projectId,
-      selectedIssueId: undefined,
-    }));
+        assigneeId: undefined,
+        issueType: 'ALL',
+        labels: [],
+        searchTerm: '',
+      };
+      return {
+        filters: newFilters,
+        baseFilters: newFilters,
+        activeProjectId: projectId,
+        selectedIssueId: undefined,
+      };
+    });
   },
   setFilters: (filters) => {
     set((state) => ({
@@ -66,7 +136,7 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
       },
     }));
   },
-  resetFilters: () => set({ filters: defaultFilters }),
+  resetFilters: () => set((state) => ({ filters: state.baseFilters })),
   setSelectedIssue: (issueId) => set({ selectedIssueId: issueId }),
   moveIssue: (issueId, nextStatus, options) => {
     set((state) => {

@@ -3,9 +3,9 @@
 import { useMemo } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
-import { Issue, Sprint, TeamMember } from 'modules/dashboard/types';
-import { formatPoints } from 'modules/dashboard/utils/format';
-import { UTILIZATION_THRESHOLDS } from 'modules/dashboard/constants';
+import { Issue, Sprint, TeamMember } from 'types/domain/dashboard';
+import { formatPoints } from 'app/components/utils/format';
+import { UTILIZATION_THRESHOLDS } from 'app/components/dashboard/constants';
 
 interface CellData {
   member: TeamMember;

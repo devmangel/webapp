@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { BoardColumn, IssueDrawer } from 'modules/dashboard/components';
-import { BOARD_COLUMNS } from 'modules/dashboard/constants';
+import { BoardColumn } from 'app/components/dashboard/BoardColumn';
+import { IssueDrawer } from 'app/components/dashboard/IssueDrawer';
+import { BOARD_COLUMNS } from 'app/components/dashboard/constants';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
-import { groupIssuesByStatus, issueMatchesFilters } from 'modules/dashboard/utils/filters';
-import { Issue } from 'modules/dashboard/types';
+import { groupIssuesByStatus, issueMatchesFilters } from 'app/components/utils/filters';
+import { Issue } from 'types/domain/dashboard';
 
 export function BoardContent({ projectId }: { projectId: string }) {
   const projects = useDashboardStore((state) => state.projects);

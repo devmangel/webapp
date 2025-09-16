@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
-import { Issue } from 'modules/dashboard/types';
+import { Issue } from 'types/domain/dashboard';
 
 type Mode = 'CONSERVADOR' | 'BALANCEADO' | 'CREATIVO';
 

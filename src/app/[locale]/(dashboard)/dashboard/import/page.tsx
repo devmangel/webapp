@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
-import { parseBacklogMarkdown } from 'modules/dashboard/utils/markdown-parser';
-import { MarkdownImportResult } from 'modules/dashboard/types';
+import { parseBacklogMarkdown } from 'app/components/utils/markdown-parser';
+import { MarkdownImportResult } from 'types/domain/dashboard';
 
 const exampleMarkdown = `# EP-1 Panel de Visibilidad
 Objetivo: Mostrar KPIs críticos para stakeholders

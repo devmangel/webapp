@@ -2,7 +2,7 @@
 
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
-import { UserSession, AuthProvider, SignInOptions } from '../../../types/auth'
+import { UserSession, AuthProvider, SignInOptions } from 'types/auth'
 import { DEFAULT_CALLBACK_URL, DEFAULT_SIGNIN_URL } from './utils'
 
 // ======================

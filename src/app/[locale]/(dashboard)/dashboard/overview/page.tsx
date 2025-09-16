@@ -3,10 +3,10 @@
 import { useMemo } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
-import { computeEpicStats, computeKpis, issueMatchesFilters } from 'modules/dashboard/utils/filters';
-import { formatDate, formatPercentage, formatPoints } from 'modules/dashboard/utils/format';
-import { Issue } from 'modules/dashboard/types';
-import { PRIORITY_LABELS } from 'modules/dashboard/constants';
+import { computeEpicStats, computeKpis, issueMatchesFilters } from 'app/components/utils/filters';
+import { formatDate, formatPercentage, formatPoints } from 'app/components/utils/format';
+import { Issue } from 'types/domain/dashboard';
+import { PRIORITY_LABELS } from 'app/components/dashboard/constants';
 
 interface KpiCardProps {
   title: string;

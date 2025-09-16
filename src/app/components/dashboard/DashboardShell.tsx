@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useMemo } from 'react';
-import { useDashboardStore } from '../state/dashboard-store';
+import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
 import { FiltersBar } from './FiltersBar';
 import { formatDate } from '../utils/format';
 
@@ -14,7 +14,7 @@ interface DashboardShellProps {
 interface NavItem {
   label: string;
   href: string;
-  icon?: JSX.Element;
+  icon?: ReactNode;
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
@@ -35,10 +35,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const navItems: NavItem[] = useMemo(() => {
     const projectBoardPath = activeProjectId
       ? `${localePrefix}/dashboard/project/${activeProjectId}/board`
-      : `${localePrefix}/dashboard`;
+      : `${localePrefix}/dashboard/board`;
     const projectBacklogPath = activeProjectId
       ? `${localePrefix}/dashboard/project/${activeProjectId}/backlog`
-      : `${localePrefix}/dashboard`;
+      : `${localePrefix}/dashboard/backlog`;
 
     return [
       { label: 'Overview', href: `${localePrefix}/dashboard/overview` },

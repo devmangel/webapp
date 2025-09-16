@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
-import { BOARD_COLUMNS, ISSUE_STATUS_LABEL, ISSUE_TYPE_COLOR, PRIORITY_LABELS } from 'modules/dashboard/constants';
-import { Issue, IssueStatus } from 'modules/dashboard/types';
+import { BOARD_COLUMNS, ISSUE_STATUS_LABEL, ISSUE_TYPE_COLOR, PRIORITY_LABELS } from 'app/components/dashboard/constants';
+import { Issue, IssueStatus } from 'types/domain/dashboard';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
-import { issueMatchesFilters } from 'modules/dashboard/utils/filters';
-import { formatDate } from 'modules/dashboard/utils/format';
+import { issueMatchesFilters } from 'app/components/utils/filters';
+import { formatDate } from 'app/components/utils/format';
 
 interface EpicGroup {
   epicId: string;

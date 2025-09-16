@@ -1,4 +1,4 @@
-import { AuthProvider } from '../../../types/auth'
+import { AuthProvider } from 'types/auth'
 
 // Constantes de configuración
 export const DEFAULT_CALLBACK_URL = '/'

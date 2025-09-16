@@ -1,8 +1,8 @@
 'use client'
 
-import { AuthProvider } from '../../../types/auth'
-import { signInAction } from '../../lib/auth/server'
-import { getProviderDisplayName } from '../../lib/auth/utils'
+import { AuthProvider } from 'types/auth'
+import { signInAction } from 'lib/auth/server'
+import { getProviderDisplayName } from 'lib/auth/utils'
 
 interface SignInButtonProps {
   provider: AuthProvider

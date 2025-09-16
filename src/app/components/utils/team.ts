@@ -1,4 +1,4 @@
-import { Issue, Sprint, TeamMember } from '../types';
+import { Issue, Sprint, TeamMember } from 'types/domain/dashboard';
 
 export interface TeamLoadEntry {
   member: TeamMember;

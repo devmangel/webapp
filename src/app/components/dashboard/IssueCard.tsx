@@ -1,8 +1,8 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { Issue } from '../types';
-import { ISSUE_TYPE_COLOR, PRIORITY_COLOR, PRIORITY_LABELS } from '../constants';
+import { Issue } from 'types/domain/dashboard';
+import { ISSUE_TYPE_COLOR, PRIORITY_COLOR, PRIORITY_LABELS } from './constants';
 import { formatPoints } from '../utils/format';
 
 interface IssueCardProps {
