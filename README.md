@@ -27,6 +27,20 @@ To learn more about Next.js, take a look at the following resources:
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
+## Testing
+
+We use Jest with Testing Library to cover UI and domain logic. Helpful commands:
+
+```bash
+npm run test           # run the full suite once (passWithNoTests enabled)
+npm run test:watch     # re-run impacted suites on file changes
+npm run test:coverage  # generate text + HTML coverage output
+```
+
+- Global setup lives in `jest.setup.ts` where Next.js specific hooks and providers are mocked.
+- Shared render helpers are available from `test-utils` (`tests/utils/test-utils.tsx`). Update this file when new global providers are introduced.
+- Place component tests next to the implementation using `__tests__` folders or `*.test.tsx` suffixes. Jest automatically ignores build artefacts under `.next`.
+
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
