@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
+/* Tailwind v4: usa media-query para `dark:` por defecto.
+   Redefinimos el variante `dark:` para que dependa de la clase `.dark`
+   en cualquier ancestro (estrategia class-based). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Variables de color (modo claro por defecto) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colores de marca */
+  --color-primary: #fbbf24; /* Amber 500 */
+  --color-secondary: #d97706; /* Amber 600 */
+
+  /* Acentos */
+  --color-accent-primary: #fbbf24; /* Amber 400 */
+  --color-accent-secondary: #0d9488; /* Teal 700 */
+
+  /* Variables semánticas consumidas por la UI */
+  --color-app-background: #fffbeb; /* Amber 50 */
+  --color-app-foreground: #111827; /* Gris 900 */
+  --color-text-primary: #4B5563; /* Gris 600 */
+  --color-text-secondary: #6B7280; /* Gris 500 */
+  --color-neutral: #F9FAFB; /* Blanco cálido */
+  --color-border: #E5E7EB; /* Gris claro */
+
+  /* Paleta (referencia) */
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
+
+  --color-gray-300: #D1D5DB;
+  --color-gray-600: #4B5563;
+  --color-gray-900: #111827;
+
+  /* Misceláneo */
+  --color-bullet-text: #111827;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Modo Oscuro */
+html.dark {
+  /* Marca/acentos pueden mantenerse iguales o variar */
+  --color-primary: #fbbf24;
+  --color-secondary: #92400e;
+  --color-accent-primary: #fde68a;
+  --color-accent-secondary: #fbbf24;
+
+  /* Overrides semánticos para modo oscuro */
+  --color-app-background: #000000; /* Negro puro */
+  --color-app-foreground: #fef3c7; /* Amber 100 */
+  --color-text-primary: #E5E7EB; /* Gris 300 */
+  --color-text-secondary: #9CA3AF; /* Gris 400 */
+  --color-neutral: #1F2937; /* Gris 800 */
+  --color-border: #6B7280; /* Gris 500 */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body{
+  background-color: var(--color-app-background);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+button{
+  cursor: pointer;
 }
