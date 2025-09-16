@@ -35,11 +35,14 @@ We use Jest with Testing Library to cover UI and domain logic. Helpful commands:
 npm run test           # run the full suite once (passWithNoTests enabled)
 npm run test:watch     # re-run impacted suites on file changes
 npm run test:coverage  # generate text + HTML coverage output
+npm run test:lint      # execute ESLint through Jest's runner (works with selectProjects)
 ```
 
 - Global setup lives in `jest.setup.ts` where Next.js specific hooks and providers are mocked.
 - Shared render helpers are available from `test-utils` (`tests/utils/test-utils.tsx`). Update this file when new global providers are introduced.
 - Place component tests next to the implementation using `__tests__` folders or `*.test.tsx` suffixes. Jest automatically ignores build artefacts under `.next`.
+- A Husky pre-commit hook runs linting and the related Jest suites on staged files via `lint-staged` to keep commits green.
+- Continuous integration lives in `.github/workflows/ci.yml` and runs lint + tests on Node.js 20.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 

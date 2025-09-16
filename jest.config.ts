@@ -5,7 +5,7 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-const customJestConfig: Config = {
+const baseTestConfig: Config = {
   clearMocks: true,
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -35,4 +35,36 @@ const customJestConfig: Config = {
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/dist/'],
 };
 
-export default createJestConfig(customJestConfig);
+const lintProject: Config = {
+  displayName: 'lint',
+  runner: 'jest-runner-eslint',
+  testMatch: ['<rootDir>/**/*.{js,jsx,ts,tsx}'],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/coverage/',
+    '<rootDir>/dist/',
+    '<rootDir>/node_modules/',
+  ],
+};
+
+const createConfig = createJestConfig(baseTestConfig);
+
+const jestConfig = async (): Promise<Config> => {
+  const nextConfig = await createConfig();
+
+  return {
+    watchPlugins: [
+      'jest-watch-typeahead/filename',
+      'jest-watch-typeahead/testname',
+    ],
+    projects: [
+      {
+        ...nextConfig,
+        displayName: 'test',
+      },
+      lintProject,
+    ],
+  };
+};
+
+export default jestConfig;
