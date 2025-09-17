@@ -2,137 +2,230 @@
 
 import { useMemo, useState } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
-import { parseBacklogMarkdown } from 'app/components/utils/markdown-parser';
-import { MarkdownImportResult } from 'types/domain/dashboard';
+import type { FeedbackItem, Completion, ImportResult } from 'types/domain/dashboard/import';
 
 interface ImportState {
   isLoading: boolean;
-  success: boolean | null;
-  error: string | null;
-  summary?: {
-    epics: number;
-    stories: number;
-    tasks: number;
-  };
+  result: ImportResult | null;
 }
 
-const exampleMarkdown = `# EP-1 Panel de Visibilidad
-Objetivo: Mostrar KPIs críticos para stakeholders
+const exampleMarkdown = `# ÉPICA EP-01 — Registro & Autenticación
 
-## ST-101 Como stakeholder quiero ver porcentajes de avance
-- AC: Mostrar tarjetas KPI con % completado
-- AC: Incluir lista de bloqueos
-- FE-201 (FE) Layout responsive del dashboard #frontend
-- BE-301 (BE) Views agregadas en Postgres #backend
+**Objetivo:** permitir crear cuenta, autenticarse y recuperar acceso.
 
-## ST-102 Como PM quiero filtrar por sprint
-- AC: Filtrar por sprint y responsable
-- AC: Guardar filtros en URL
-- FE-202 Virtualizar backlog largo
+## Historias
 
-# EP-2 Importador Markdown
-Objetivo: Evitar carga manual de backlog
+* **ST-01.1** Como publicador quiero crear una cuenta con email para gestionar mis listados.
+* **ST-01.2** Como usuario quiero iniciar sesión con email/contraseña o magic link.
+* **ST-01.3** Como usuario olvidé mi contraseña y quiero restablecerla.
 
-## ST-201 Como PM quiero pegar backlog
-- AC: Validar IDs únicos
-- AC: Mostrar preview JSON
-- OPS-101 Script de limpieza
+### Criterios de aceptación (comunes)
+
+* Validaciones de formulario y mensajes de error claros.
+* Email de verificación/restablecimiento se envía y procesa correctamente.
+* Rate limiting en intentos de login.
+
+## Tareas Frontend
+
+* **FE-01** Pantallas: /signup, /login, /forgot-password, /verify (UI + estados de carga/éxito/error).
+* **FE-02** Formularios con validación (client + server) y accesibilidad (labels, focus).
+* **FE-03** Integrar llamadas a API de auth (registro, login, magic link, reset).
+
+## Tareas Backend
+
+* **BE-01** Endpoints Auth: POST /auth/signup, /auth/login, /auth/magic, /auth/reset, /auth/verify.
+* **BE-02** Modelo User y almacenamiento seguro de contraseñas.
+* **BE-03** Emisor de emails transaccionales (plantillas verificación/reset).
 `;
 
-function ResultSummary({ result }: { result: MarkdownImportResult | null }) {
+function FeedbackSection({ 
+  title, 
+  items, 
+  type 
+}: { 
+  title: string; 
+  items: FeedbackItem[]; 
+  type: 'error' | 'warning' | 'completion' 
+}) {
+  if (items.length === 0) return null;
+
+  const colorClasses = {
+    error: 'border-red-300 bg-red-50 text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200',
+    warning: 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-500/50 dark:bg-amber-500/10 dark:text-amber-200',
+    completion: 'border-green-300 bg-green-50 text-green-700 dark:border-green-500/40 dark:bg-green-500/10 dark:text-green-200'
+  };
+
+  const icons = {
+    error: '❌',
+    warning: '⚠️',
+    completion: '✨'
+  };
+
+  return (
+    <div className={`rounded-md border p-3 text-sm ${colorClasses[type]}`}>
+      <h4 className="font-semibold flex items-center gap-2">
+        <span>{icons[type]}</span>
+        {title}
+      </h4>
+      <ul className="mt-2 space-y-1">
+        {items.map((item, index) => (
+          <li key={index} className="text-xs">
+            <div className="flex flex-col gap-1">
+              <span>{item.message}</span>
+              {item.location && (
+                <span className="opacity-75">📍 {item.location}</span>
+              )}
+              {item.suggestion && (
+                <span className="opacity-75">💡 {item.suggestion}</span>
+              )}
+              {item.autoValue && (
+                <span className="opacity-75">🤖 Auto-completado: {item.autoValue}</span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function CompletionSection({ completions }: { completions: Completion[] }) {
+  if (completions.length === 0) return null;
+
+  return (
+    <div className="rounded-md border border-blue-300 bg-blue-50 p-3 text-sm text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-200">
+      <h4 className="font-semibold flex items-center gap-2">
+        <span>🔧</span>
+        Mejoras aplicadas por IA
+      </h4>
+      <ul className="mt-2 space-y-1">
+        {completions.map((completion, index) => {
+          const displayValue = typeof completion.generated === 'number' 
+            ? `${completion.generated} puntos` 
+            : completion.generated;
+          
+          return (
+            <li key={index} className="text-xs">
+              <div className="flex flex-col gap-1">
+                <span className="font-medium">{completion.target}</span>
+                <span className="opacity-75">{completion.type}: {displayValue}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function ImportResultDisplay({ result }: { result: ImportResult | null }) {
   if (!result) {
     return (
-      <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-        Pega tu Markdown y presiona Analizar para ver la estructura detectada.
-      </p>
+      <div className="text-center py-8">
+        <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
+          Pega tu markdown y presiona el botón para procesar con IA
+        </p>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-              Épicas
-            </p>
-            <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-              {result.epics.length}
-            </p>
-          </CardBody>
-        </Card>
-        <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-              Historias
-            </p>
-            <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-              {result.stories.length}
-            </p>
-          </CardBody>
-        </Card>
-        <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-              Tareas
-            </p>
-            <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-              {result.tasks.length}
-            </p>
-          </CardBody>
-        </Card>
-      </div>
-      <div>
-        <h3 className="text-sm font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-          Detalle
-        </h3>
-        <div className="mt-2 rounded-lg border border-border-light bg-neutral-50 p-3 text-xs text-textSecondary-light dark:border-border-dark dark:bg-neutral-900/60 dark:text-textSecondary-dark">
-          <pre className="max-h-64 overflow-auto whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
+      {/* Resumen */}
+      {result.summary && (
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
+            <CardBody>
+              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
+                Épicas
+              </p>
+              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
+                {result.summary.epics}
+              </p>
+            </CardBody>
+          </Card>
+          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
+            <CardBody>
+              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
+                Historias
+              </p>
+              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
+                {result.summary.stories}
+              </p>
+            </CardBody>
+          </Card>
+          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
+            <CardBody>
+              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
+                Tareas
+              </p>
+              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
+                {result.summary.tasks}
+              </p>
+            </CardBody>
+          </Card>
         </div>
-      </div>
-      <div className="space-y-2">
-        {result.errors.length > 0 ? (
-          <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
-            <h4 className="font-semibold">Errores</h4>
-            <ul className="list-disc pl-5">
-              {result.errors.map((error) => (
-                <li key={error}>{error}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-        {result.warnings.length > 0 ? (
-          <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-500/50 dark:bg-amber-500/10 dark:text-amber-200">
-            <h4 className="font-semibold">Warnings</h4>
-            <ul className="list-disc pl-5">
-              {result.warnings.map((warning) => (
-                <li key={warning}>{warning}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </div>
+      )}
+
+      {/* Feedback */}
+      {result.feedback && (
+        <div className="space-y-3">
+          <FeedbackSection
+            title="Errores críticos"
+            items={result.feedback.errors || []}
+            type="error"
+          />
+          <FeedbackSection
+            title="Advertencias"
+            items={result.feedback.warnings || []}
+            type="warning"
+          />
+          <CompletionSection completions={result.feedback.completions || []} />
+        </div>
+      )}
+
+      {/* Estado general */}
+      {result.success ? (
+        <div className="rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-700 dark:border-green-500/40 dark:bg-green-500/10 dark:text-green-200">
+          <h4 className="font-semibold">✅ Importación exitosa</h4>
+          <p>
+            Se crearon {result.summary?.epics} épicas, {result.summary?.stories} historias y {result.summary?.tasks} tareas.
+            Todas las tareas fueron asignadas automáticamente al desarrollador especificado.
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
+          <h4 className="font-semibold">❌ Error en la importación</h4>
+          <p>
+            Revisa los errores arriba y corrige el markdown antes de intentar de nuevo.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function ImportPage() {
   const [markdown, setMarkdown] = useState(exampleMarkdown);
-  const [result, setResult] = useState<MarkdownImportResult | null>(null);
   const [importState, setImportState] = useState<ImportState>({
     isLoading: false,
-    success: null,
-    error: null,
+    result: null,
   });
 
-  const stats = useMemo(() => (result ? `${result.epics.length} épicas, ${result.stories.length} historias, ${result.tasks.length} tareas` : 'Sin análisis'), [result]);
+  const stats = useMemo(() => {
+    if (importState.result?.summary) {
+      const { epics, stories, tasks } = importState.result.summary;
+      return `${epics} épicas, ${stories} historias, ${tasks} tareas`;
+    }
+    return 'Listo para procesar';
+  }, [importState.result]);
 
-  const canImport = result && result.errors.length === 0 && result.epics.length > 0;
+  const canImport = markdown.trim().length > 0 && !importState.isLoading;
 
   const handleImport = async () => {
     if (!canImport) return;
 
-    setImportState({ isLoading: true, success: null, error: null });
+    setImportState({ isLoading: true, result: null });
 
     try {
       const response = await fetch('/api/dashboard/import', {
@@ -147,23 +240,28 @@ export default function ImportPage() {
         }),
       });
 
-      const data = await response.json();
+      const result: ImportResult = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Error en la importación');
-      }
-
       setImportState({
         isLoading: false,
-        success: true,
-        error: null,
-        summary: data.summary,
+        result,
       });
     } catch (error) {
+      console.error('Error en importación:', error);
       setImportState({
         isLoading: false,
-        success: false,
-        error: error instanceof Error ? error.message : 'Error desconocido',
+        result: {
+          success: false,
+          feedback: {
+            errors: [{
+              type: 'CRITICAL',
+              message: 'Error de conexión. Verifique su conexión a internet e intente de nuevo.',
+              suggestion: error instanceof Error ? error.message : 'Error desconocido'
+            }],
+            warnings: [],
+            completions: []
+          }
+        }
       });
     }
   };
@@ -173,39 +271,56 @@ export default function ImportPage() {
       <header className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-            Importar backlog en Markdown
+            Importar backlog con IA
           </h1>
           <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-            Pega el contenido para validar estructura, IDs y obtener un preview JSON antes de pasarlo a IA
+            Pega tu especificación en markdown y la IA la procesará automáticamente para crear épicas, historias y tareas
           </p>
         </div>
         <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
           {stats}
         </div>
       </header>
+
       <section className="grid gap-4 lg:grid-cols-2">
         <Card className="border border-border-light/70 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
           <CardBody>
             <label className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-              Markdown source
+              Especificación en Markdown
             </label>
             <textarea
               value={markdown}
               onChange={(event) => setMarkdown(event.target.value)}
               rows={24}
               className="mt-2 w-full rounded-md border border-border-light bg-white px-4 py-3 text-sm text-textPrimary-light focus:border-primary focus:outline-none dark:border-border-dark dark:bg-neutral-950 dark:text-textPrimary-dark"
-              placeholder="Pega aquí el backlog en formato markdown"
+              placeholder="Pega aquí tu especificación en formato markdown"
             />
-            <div className="mt-3 space-y-3">
-              {/* Botones de preparación */}
+            
+            <div className="mt-4 space-y-3">
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setResult(parseBacklogMarkdown(markdown))}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-semibold  transition-colors hover:bg-secondary"
+                  onClick={handleImport}
+                  disabled={!canImport}
+                  className={`rounded-md px-6 py-2.5 text-sm font-semibold transition-all ${
+                    canImport
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-xl transform hover:-translate-y-0.5'
+                      : 'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800 dark:text-neutral-600'
+                  }`}
                 >
-                  Analizar Markdown
+                  {importState.isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Procesando con IA...
+                    </span>
+                  ) : (
+                    '🤖 Procesar e Importar con IA'
+                  )}
                 </button>
+                
                 <button
                   type="button"
                   onClick={() => setMarkdown(exampleMarkdown)}
@@ -215,72 +330,21 @@ export default function ImportPage() {
                 </button>
               </div>
               
-              {/* Separador visual */}
-              {result && (
-                <div className="border-t border-border-light pt-3 dark:border-border-dark">
-                  <p className="mb-2 text-xs font-medium text-textSecondary-light dark:text-textSecondary-dark">
-                    Procesamiento con IA
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleImport}
-                    disabled={!canImport || importState.isLoading}
-                    className={`rounded-md px-6 py-2.5 text-sm font-semibold transition-all ${
-                      canImport && !importState.isLoading
-                        ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:from-green-700 hover:to-green-800 hover:shadow-xl transform hover:-translate-y-0.5'
-                        : 'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800 dark:text-neutral-600'
-                    }`}
-                  >
-                    {importState.isLoading ? (
-                      <span className="flex items-center gap-2">
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                          <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Procesando con IA...
-                      </span>
-                    ) : (
-                      '🤖 Procesar e Importar con IA'
-                    )}
-                  </button>
-                  {!canImport && result && (
-                    <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
-                      {result.errors.length > 0 
-                        ? 'Corrija los errores antes de procesar con IA'
-                        : 'Analice el markdown primero para habilitar el procesamiento'
-                      }
-                    </p>
-                  )}
-                </div>
-              )}
+              <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
+                💡 La IA acepta múltiples formatos de markdown y completará automáticamente información faltante
+              </p>
             </div>
-
-            {/* Estado de importación */}
-            {importState.success === true && (
-              <div className="mt-3 rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-700 dark:border-green-500/40 dark:bg-green-500/10 dark:text-green-200">
-                <h4 className="font-semibold">✅ Importación exitosa</h4>
-                <p>
-                  Se crearon {importState.summary?.epics} épicas, {importState.summary?.stories} historias y {importState.summary?.tasks} tareas.
-                  Las tareas fueron asignadas al desarrollador especificado.
-                </p>
-              </div>
-            )}
-
-            {importState.error && (
-              <div className="mt-3 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
-                <h4 className="font-semibold">❌ Error en la importación</h4>
-                <p>{importState.error}</p>
-              </div>
-            )}
-
           </CardBody>
         </Card>
+
         <Card className="border border-border-light/70 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
           <CardBody>
             <h2 className="text-base font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-              Preview normalizado
+              Resultado del procesamiento
             </h2>
-            <ResultSummary result={result} />
+            <div className="mt-4">
+              <ImportResultDisplay result={importState.result} />
+            </div>
           </CardBody>
         </Card>
       </section>
