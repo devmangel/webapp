@@ -44,6 +44,5 @@ next-env.d.ts
 supabase/*
 scripts/*
 
-# AI Agents
-REQ.MD
-TODO.md
+# Temp
+/temp
