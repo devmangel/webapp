@@ -148,7 +148,7 @@ export default function ImportPage() {
       });
 
       const data = await response.json();
-
+      
       if (!response.ok) {
         throw new Error(data.error || 'Error en la importación');
       }
@@ -196,33 +196,63 @@ export default function ImportPage() {
               className="mt-2 w-full rounded-md border border-border-light bg-white px-4 py-3 text-sm text-textPrimary-light focus:border-primary focus:outline-none dark:border-border-dark dark:bg-neutral-950 dark:text-textPrimary-dark"
               placeholder="Pega aquí el backlog en formato markdown"
             />
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setResult(parseBacklogMarkdown(markdown))}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-secondary"
-              >
-                Analizar
-              </button>
-              <button
-                type="button"
-                onClick={() => setMarkdown(exampleMarkdown)}
-                className="rounded-md border border-border-light px-4 py-2 text-sm font-semibold text-textSecondary-light transition-colors hover:border-primary hover:text-primary dark:border-border-dark dark:text-textSecondary-dark"
-              >
-                Cargar ejemplo
-              </button>
-              <button
-                type="button"
-                onClick={handleImport}
-                disabled={!canImport || importState.isLoading}
-                className={`rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
-                  canImport && !importState.isLoading
-                    ? 'bg-green-600 text-white hover:bg-green-700'
-                    : 'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800 dark:text-neutral-600'
-                }`}
-              >
-                {importState.isLoading ? 'Procesando...' : 'Cargar archivo'}
-              </button>
+            <div className="mt-3 space-y-3">
+              {/* Botones de preparación */}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setResult(parseBacklogMarkdown(markdown))}
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-semibold  transition-colors hover:bg-secondary"
+                >
+                  Analizar Markdown
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMarkdown(exampleMarkdown)}
+                  className="rounded-md border border-border-light px-4 py-2 text-sm font-semibold text-textSecondary-light transition-colors hover:border-primary hover:text-primary dark:border-border-dark dark:text-textSecondary-dark"
+                >
+                  Cargar ejemplo
+                </button>
+              </div>
+              
+              {/* Separador visual */}
+              {result && (
+                <div className="border-t border-border-light pt-3 dark:border-border-dark">
+                  <p className="mb-2 text-xs font-medium text-textSecondary-light dark:text-textSecondary-dark">
+                    Procesamiento con IA
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleImport}
+                    disabled={!canImport || importState.isLoading}
+                    className={`rounded-md px-6 py-2.5 text-sm font-semibold transition-all ${
+                      canImport && !importState.isLoading
+                        ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:from-green-700 hover:to-green-800 hover:shadow-xl transform hover:-translate-y-0.5'
+                        : 'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800 dark:text-neutral-600'
+                    }`}
+                  >
+                    {importState.isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                          <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Procesando con IA...
+                      </span>
+                    ) : (
+                      '🤖 Procesar e Importar con IA'
+                    )}
+                  </button>
+                  {!canImport && result && (
+                    <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                      {result.errors.length > 0 
+                        ? 'Corrija los errores antes de procesar con IA'
+                        : 'Analice el markdown primero para habilitar el procesamiento'
+                      }
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Estado de importación */}
@@ -243,17 +273,6 @@ export default function ImportPage() {
               </div>
             )}
 
-            {!canImport && result && (
-              <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-500/50 dark:bg-amber-500/10 dark:text-amber-200">
-                <h4 className="font-semibold">⚠️ No se puede importar</h4>
-                <p>
-                  {result.errors.length > 0 
-                    ? 'Corrija los errores antes de importar.'
-                    : 'Analice el markdown para habilitar la importación.'
-                  }
-                </p>
-              </div>
-            )}
           </CardBody>
         </Card>
         <Card className="border border-border-light/70 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
