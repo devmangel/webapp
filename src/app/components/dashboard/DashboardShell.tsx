@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useMemo } from 'react';
 import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
+import { useDashboardInit } from '../../../hooks/useDashboardInit';
 import { FiltersBar } from './FiltersBar';
 import { formatDate } from '../utils/format';
+import Spinner from '../ui/Spinner';
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -19,18 +21,19 @@ interface NavItem {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
+  const { isHydrated, isLoading, loadError } = useDashboardInit();
+  
   const activeProjectId = useDashboardStore((state) => state.activeProjectId);
   const filters = useDashboardStore((state) => state.filters);
   const projects = useDashboardStore((state) => state.projects);
   const sprints = useDashboardStore((state) => state.sprints);
 
+  // Los hooks deben llamarse siempre en el mismo orden
   const localePrefix = useMemo(() => {
     const segments = pathname?.split('/').filter(Boolean) ?? [];
     const localeCandidate = segments[0] ?? 'en';
     return `/${localeCandidate}`;
   }, [pathname]);
-
-  const sprint = filters.sprintId ? sprints[filters.sprintId] : undefined;
 
   const navItems: NavItem[] = useMemo(() => {
     const projectBoardPath = activeProjectId
@@ -49,6 +52,44 @@ export function DashboardShell({ children }: DashboardShellProps) {
       { label: 'AI Preview', href: `${localePrefix}/dashboard/ai/preview` },
     ];
   }, [activeProjectId, localePrefix]);
+
+  // Si hay error de carga, mostrar mensaje
+  if (loadError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-neutral-light dark:bg-neutral-dark">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold text-red-600 dark:text-red-400">
+            Error al cargar el dashboard
+          </h1>
+          <p className="mt-2 text-sm text-textSecondary-light dark:text-textSecondary-dark">
+            {loadError}
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 rounded bg-primary px-4 py-2 text-white hover:bg-primary/90"
+          >
+            Recargar página
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Si está cargando, mostrar spinner
+  if (isLoading || !isHydrated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-neutral-light dark:bg-neutral-dark">
+        <div className="text-center">
+          <Spinner height={48} width={48} />
+          <p className="mt-4 text-sm text-textSecondary-light dark:text-textSecondary-dark">
+            Cargando dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const sprint = filters.sprintId ? sprints[filters.sprintId] : undefined;
 
   return (
     <div className="flex min-h-screen bg-neutral-light text-textPrimary-light dark:bg-neutral-dark dark:text-textPrimary-dark">
