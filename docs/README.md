@@ -7,8 +7,9 @@ Este repositorio implementa un panel de control para gestionar proyectos, backlo
 1. [Arquitectura de la aplicación](./app/architecture.md) · Capas del App Router, internacionalización y diseño de componentes.
 2. [Flujo de datos y Supabase](./app/data-flow.md) · Cómo se orquestan llamadas al backend, seguridad y variables de entorno.
 3. [Dashboard interactivo](./app/dashboard.md) · Estado global, páginas del tablero y puntos de extensión.
-4. [Autenticación](./auth/README.md) · Diseño server-first de NextAuth y componentes de login.
-5. [Pruebas](./testing/README.md) · Estrategia de Jest, mocks y pipeline de CI.
+4. [🚀 Sistema de Importación con IA](./import/README.md) · Creación automática de proyectos desde markdown con IA híbrida.
+5. [Autenticación](./auth/README.md) · Diseño server-first de NextAuth y componentes de login.
+6. [Pruebas](./testing/README.md) · Estrategia de Jest, mocks y pipeline de CI.
 
 Sigue el orden para tener primero la vista de alto nivel y luego profundizar en cada módulo.
 
