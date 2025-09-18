@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo } from 'react';
+import { motion } from 'motion/react';
 import { Card, CardBody } from 'components/ui/Card';
+import { Typography } from 'components/ui/Typography';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
 import { computeEpicStats, computeKpis, issueMatchesFilters } from 'app/components/utils/filters';
 import { formatDate, formatPercentage, formatPoints } from 'app/components/utils/format';
@@ -13,27 +15,76 @@ interface KpiCardProps {
   value: string;
   sublabel?: string;
   accentClass?: string;
+  icon?: React.ReactNode;
+  index?: number;
 }
 
-function KpiCard({ title, value, sublabel, accentClass }: KpiCardProps) {
+function KpiCard({ title, value, sublabel, accentClass, icon, index = 0 }: KpiCardProps) {
   return (
-    <Card className="border border-border-light/60 bg-white/90 dark:border-border-dark/60 dark:bg-neutral-900/70">
-      <CardBody>
-        <p className="text-xs font-semibold uppercase tracking-wide text-textSecondary-light dark:text-textSecondary-dark">
-          {title}
-        </p>
-        <p className="mt-3 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-          {value}
-        </p>
-        {sublabel ? (
-          <p className={`mt-2 text-sm text-textSecondary-light dark:text-textSecondary-dark ${accentClass ?? ''}`}>
-            {sublabel}
-          </p>
-        ) : null}
-      </CardBody>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        duration: 0.4, 
+        delay: index * 0.1,
+        ease: "easeOut"
+      }}
+    >
+      <Card variant="elevated" hover className="group">
+        <CardBody className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <Typography variant="overline" color="secondary">
+                {title}
+              </Typography>
+              <Typography variant="display-sm" className="mt-2 font-bold">
+                {value}
+              </Typography>
+              {sublabel && (
+                <Typography 
+                  variant="caption" 
+                  color="secondary" 
+                  className={`mt-2 ${accentClass || ''}`}
+                >
+                  {sublabel}
+                </Typography>
+              )}
+            </div>
+            {icon && (
+              <div className="flex-shrink-0 ml-4 p-3 bg-amber-50 rounded-xl text-amber-600 group-hover:bg-amber-100 transition-colors dark:bg-amber-900/20 dark:text-amber-400">
+                {icon}
+              </div>
+            )}
+          </div>
+        </CardBody>
+      </Card>
+    </motion.div>
   );
 }
+
+// Iconos para las KPI cards
+const Icons = {
+  total: (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+    </svg>
+  ),
+  progress: (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  inProgress: (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  blocked: (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364L18.364 5.636" />
+    </svg>
+  )
+};
 
 export default function OverviewPage() {
   const projects = useDashboardStore((state) => state.projects);
@@ -74,33 +125,63 @@ export default function OverviewPage() {
   const currentSprint = filters.sprintId ? sprints[filters.sprintId] : undefined;
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Header */}
+      <motion.section
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Typography variant="h2" className="mb-2">
+          Dashboard Overview
+        </Typography>
+        <Typography variant="subtitle" color="secondary">
+          {currentSprint ? `Sprint: ${currentSprint.name}` : 'Métricas generales del proyecto'}
+        </Typography>
+        {currentSprint && (
+          <Typography variant="caption" color="secondary" className="mt-1">
+            {formatDate(currentSprint.startDate)} – {formatDate(currentSprint.endDate)}
+          </Typography>
+        )}
+      </motion.section>
+
+      {/* KPIs Grid */}
       <section>
-        <h2 className="text-lg font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-          KPIs del sprint {currentSprint ? currentSprint.name : ''}
-        </h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
             title="Total de issues"
             value={kpis.total.toString()}
             sublabel={`${kpis.todo} pendientes`}
+            icon={Icons.total}
+            index={0}
           />
           <KpiCard
             title="Progreso"
             value={formatPercentage(kpis.completionRate)}
             sublabel={`${kpis.done} completados`}
-            accentClass="text-emerald-600 dark:text-emerald-400"
+            accentClass="!text-emerald-600 dark:!text-emerald-400"
+            icon={Icons.progress}
+            index={1}
           />
           <KpiCard
             title="En curso"
             value={`${kpis.inProgress}`}
             sublabel={`${kpis.inReview} en revisión`}
+            icon={Icons.inProgress}
+            index={2}
           />
           <KpiCard
             title="Bloqueados"
             value={kpis.blocked.toString()}
-            accentClass="text-red-600 dark:text-red-400"
+            accentClass={kpis.blocked > 0 ? "!text-red-600 dark:!text-red-400" : "!text-emerald-600 dark:!text-emerald-400"}
             sublabel={kpis.blocked > 0 ? 'Atender en daily' : 'Sin bloqueos'}
+            icon={Icons.blocked}
+            index={3}
           />
         </div>
       </section>
@@ -254,6 +335,6 @@ export default function OverviewPage() {
           </CardBody>
         </Card>
       </section>
-    </div>
+    </motion.div>
   );
 }

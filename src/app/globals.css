@@ -8,7 +8,7 @@
 /* Variables de color (modo claro por defecto) */
 :root {
   /* Colores de marca */
-  --color-primary: #fbbf24; /* Amber 500 */
+  --color-primary: #fbbf24; /* Amber 400 */
   --color-secondary: #d97706; /* Amber 600 */
 
   /* Acentos */
@@ -18,12 +18,52 @@
   /* Variables semánticas consumidas por la UI */
   --color-app-background: #fffbeb; /* Amber 50 */
   --color-app-foreground: #111827; /* Gris 900 */
-  --color-text-primary: #4B5563; /* Gris 600 */
+  --color-text-primary: #374151; /* Gris 700 - Más contraste */
   --color-text-secondary: #6B7280; /* Gris 500 */
   --color-neutral: #F9FAFB; /* Blanco cálido */
   --color-border: #E5E7EB; /* Gris claro */
 
-  /* Paleta (referencia) */
+  /* Sistema de colores extendido */
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f8fafc;
+  --color-surface-tertiary: #f1f5f9;
+  
+  /* Estados */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Espaciado Apple-style */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+
+  /* Bordes y radios */
+  --border-radius-sm: 0.375rem;  /* 6px */
+  --border-radius-md: 0.5rem;    /* 8px */
+  --border-radius-lg: 0.75rem;   /* 12px */
+  --border-radius-xl: 1rem;      /* 16px */
+
+  /* Sombras Apple-style */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Tipografía */
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+
+  /* Paleta amber completa (referencia) */
   --color-amber-50: #fffbeb;
   --color-amber-100: #fef3c7;
   --color-amber-200: #fde68a;
@@ -36,9 +76,18 @@
   --color-amber-900: #78350f;
   --color-amber-950: #451a03;
 
-  --color-gray-300: #D1D5DB;
-  --color-gray-600: #4B5563;
+  /* Grises neutros */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
   --color-gray-900: #111827;
+  --color-gray-950: #030712;
 
   /* Misceláneo */
   --color-bullet-text: #111827;
@@ -46,25 +95,152 @@
 
 /* Modo Oscuro */
 html.dark {
-  /* Marca/acentos pueden mantenerse iguales o variar */
-  --color-primary: #fbbf24;
-  --color-secondary: #92400e;
-  --color-accent-primary: #fde68a;
-  --color-accent-secondary: #fbbf24;
+  /* Colores de marca ajustados para oscuro */
+  --color-primary: #fbbf24; /* Amber 400 - mantiene visibilidad */
+  --color-secondary: #b45309; /* Amber 700 - más contraste */
+  --color-accent-primary: #fde68a; /* Amber 200 - más suave */
+  --color-accent-secondary: #14b8a6; /* Teal 500 - ajustado */
 
-  /* Overrides semánticos para modo oscuro */
-  --color-app-background: #000000; /* Negro puro */
-  --color-app-foreground: #fef3c7; /* Amber 100 */
-  --color-text-primary: #E5E7EB; /* Gris 300 */
-  --color-text-secondary: #9CA3AF; /* Gris 400 */
-  --color-neutral: #1F2937; /* Gris 800 */
-  --color-border: #6B7280; /* Gris 500 */
+  /* Variables semánticas para modo oscuro */
+  --color-app-background: #030712; /* Gray 950 - más suave que negro puro */
+  --color-app-foreground: #f9fafb; /* Gray 50 */
+  --color-text-primary: #e5e7eb; /* Gray 200 - buen contraste */
+  --color-text-secondary: #9ca3af; /* Gray 400 */
+  --color-neutral: #1f2937; /* Gray 800 */
+  --color-border: #374151; /* Gray 700 - más suave */
+
+  /* Superficies para modo oscuro */
+  --color-surface: #111827; /* Gray 900 */
+  --color-surface-secondary: #1f2937; /* Gray 800 */
+  --color-surface-tertiary: #374151; /* Gray 700 */
+
+  /* Estados ajustados para oscuro */
+  --color-success: #22c55e; /* Green 500 - más vibrante */
+  --color-warning: #f59e0b; /* Amber 500 */
+  --color-error: #f87171; /* Red 400 - menos agresivo */
+  --color-info: #60a5fa; /* Blue 400 */
+
+  /* Sombras para modo oscuro */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
 }
 
 body{
   background-color: var(--color-app-background);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button{
   cursor: pointer;
+}
+
+/* Utilidades globales Apple-style */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-morphism {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(55, 65, 81, 0.3);
+}
+
+/* Scrollbars minimalistas */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-gray-600);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Focus visible mejorado */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
+.dark .focus-ring {
+  @apply focus-visible:ring-offset-gray-900;
+}
+
+/* Animaciones base */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Respeto por reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Line clamp utility */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
