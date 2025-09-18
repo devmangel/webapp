@@ -1,88 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MarkdownProcessor } from 'app/lib/ai/markdown-processor';
-import { ImportService } from 'app/lib/supabase/import-service';
+import { ImportOrchestrator } from 'app/lib/supabase/import-orchestrator.service';
 import type { ImportRequest } from 'types/domain/dashboard/import';
 
 export async function POST(request: NextRequest) {
   try {
     const body: ImportRequest = await request.json();
-    const { markdown, projectId, assigneeId } = body;
+    const { markdown, uploaderId, assigneeId } = body;
 
-    if (!markdown || !projectId || !assigneeId) {
+    if (!markdown || !uploaderId) {
       return NextResponse.json(
-        { error: 'Faltan parámetros requeridos' },
+        { error: 'Faltan parámetros requeridos (markdown, uploaderId)' },
         { status: 400 }
       );
     }
 
-    console.log('Iniciando importación:', { projectId, assigneeId });
+    console.log('🚀 Iniciando importación completa con creación automática de proyecto');
+    console.log('📊 Parámetros:', { 
+      uploaderId, 
+      assigneeId: assigneeId || 'Desarrollador fijo automático',
+      markdownLength: markdown.length 
+    });
 
-    const importService = new ImportService();
-
-    // 1. Validar que proyecto y usuario existan
-    const validation = await importService.validateProjectAndUser(projectId, assigneeId);
-    if (!validation.isValid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 404 }
-      );
-    }
-
-    // 2. Procesar markdown con IA
-    console.log('Procesando markdown con IA...');
-    const processedData = await MarkdownProcessor.processMarkdown(markdown, assigneeId);
+    // Inicializar orquestador e iniciar importación completa
+    const orchestrator = new ImportOrchestrator();
     
-    // 3. Validar resultado de IA
-    const aiValidation = MarkdownProcessor.validateProcessedBacklog(processedData);
-    if (!aiValidation.isValid) {
-      return NextResponse.json({
-        success: false,
-        feedback: {
-          errors: processedData.errors.concat(
-            aiValidation.validationErrors.map(error => ({
-              type: 'CRITICAL' as const,
-              message: error
-            }))
-          ),
-          warnings: processedData.warnings,
-          completions: processedData.completions
-        }
-      }, { status: 400 });
-    }
-
-    // 4. Si hay errores críticos de IA, retornar feedback
-    if (!processedData.success || processedData.errors.length > 0) {
-      return NextResponse.json({
-        success: false,
-        feedback: {
-          errors: processedData.errors,
-          warnings: processedData.warnings,
-          completions: processedData.completions
-        }
-      }, { status: 400 });
-    }
-
-    // 5. Procesar e insertar en base de datos
-    console.log('Insertando en base de datos...');
-    const result = await importService.processImport(
+    const result = await orchestrator.processFullImport({
       markdown,
-      processedData,
-      projectId,
+      uploaderId,
       assigneeId
-    );
+    });
+
+    // Log del resultado para debugging
+    if (result.success) {
+      console.log('✅ Importación exitosa:', {
+        projectId: result.projectId,
+        summary: result.summary
+      });
+    } else {
+      console.log('❌ Importación falló:', {
+        errors: result.feedback?.errors?.map(e => e.message)
+      });
+    }
 
     return NextResponse.json(result);
 
   } catch (error) {
-    console.error('Error en importación:', error);
+    console.error('💥 Error crítico en endpoint de importación:', error);
     return NextResponse.json(
       { 
         success: false,
         feedback: {
           errors: [{
-            type: 'CRITICAL',
-            message: 'Error procesando importación',
-            suggestion: error instanceof Error ? error.message : 'Error desconocido'
+            type: 'CRITICAL' as const,
+            message: 'Error crítico del servidor',
+            suggestion: error instanceof Error ? error.message : 'Error desconocido del sistema'
           }],
           warnings: [],
           completions: []

@@ -2,12 +2,15 @@
 
 import { useMemo, useState } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
-import type { FeedbackItem, Completion, ImportResult } from 'types/domain/dashboard/import';
+import type { FeedbackItem, Completion, FullImportResult } from 'types/domain/dashboard/import';
 
 interface ImportState {
   isLoading: boolean;
-  result: ImportResult | null;
+  result: FullImportResult | null;
 }
+
+// Usuario fijo para todas las operaciones
+const FIXED_USER_ID = '06aec8c6-b939-491b-b711-f04d7670e045';
 
 const exampleMarkdown = `# ÉPICA EP-01 — Registro & Autenticación
 
@@ -118,7 +121,7 @@ function CompletionSection({ completions }: { completions: Completion[] }) {
   );
 }
 
-function ImportResultDisplay({ result }: { result: ImportResult | null }) {
+function ImportResultDisplay({ result }: { result: FullImportResult | null }) {
   if (!result) {
     return (
       <div className="text-center py-8">
@@ -131,9 +134,34 @@ function ImportResultDisplay({ result }: { result: ImportResult | null }) {
 
   return (
     <div className="space-y-4">
-      {/* Resumen */}
+      {/* Información del Proyecto Creado */}
+      {result.success && result.projectId && result.summary && (
+        <div className="rounded-md border border-blue-300 bg-blue-50 p-4 text-sm text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-200">
+          <h4 className="font-semibold flex items-center gap-2 mb-2">
+            <span>🚀</span>
+            Proyecto creado automáticamente
+          </h4>
+          <div className="space-y-1 text-xs">
+            <p><span className="font-medium">Proyecto:</span> {result.summary.project}</p>
+            <p><span className="font-medium">ID:</span> {result.projectId}</p>
+            <p><span className="font-medium">Sprints generados:</span> {result.summary.sprints} sprints secuenciales</p>
+          </div>
+        </div>
+      )}
+
+      {/* Resumen de Elementos */}
       {result.summary && (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
+            <CardBody>
+              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
+                Sprints
+              </p>
+              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
+                {result.summary.sprints}
+              </p>
+            </CardBody>
+          </Card>
           <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
             <CardBody>
               <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
@@ -187,17 +215,18 @@ function ImportResultDisplay({ result }: { result: ImportResult | null }) {
       {/* Estado general */}
       {result.success ? (
         <div className="rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-700 dark:border-green-500/40 dark:bg-green-500/10 dark:text-green-200">
-          <h4 className="font-semibold">✅ Importación exitosa</h4>
-          <p>
-            Se crearon {result.summary?.epics} épicas, {result.summary?.stories} historias y {result.summary?.tasks} tareas.
-            Todas las tareas fueron asignadas automáticamente al desarrollador especificado.
-          </p>
+          <h4 className="font-semibold">✅ Importación completada exitosamente</h4>
+          <div className="mt-2 space-y-1">
+            <p>Se creó automáticamente el proyecto <span className="font-medium">{result.summary?.project}</span></p>
+            <p>📊 Elementos generados: {result.summary?.sprints} sprints, {result.summary?.epics} épicas, {result.summary?.stories} historias, {result.summary?.tasks} tareas</p>
+            <p>👨‍💻 Todas las tareas fueron asignadas automáticamente al desarrollador especificado</p>
+          </div>
         </div>
       ) : (
         <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
           <h4 className="font-semibold">❌ Error en la importación</h4>
-          <p>
-            Revisa los errores arriba y corrige el markdown antes de intentar de nuevo.
+          <p className="mt-1">
+            La importación falló. Revisa los errores arriba y corrige el markdown antes de intentar de nuevo.
           </p>
         </div>
       )}
@@ -214,10 +243,10 @@ export default function ImportPage() {
 
   const stats = useMemo(() => {
     if (importState.result?.summary) {
-      const { epics, stories, tasks } = importState.result.summary;
-      return `${epics} épicas, ${stories} historias, ${tasks} tareas`;
+      const { sprints, epics, stories, tasks } = importState.result.summary;
+      return `${sprints} sprints, ${epics} épicas, ${stories} historias, ${tasks} tareas`;
     }
-    return 'Listo para procesar';
+    return 'Listo para crear proyecto automáticamente';
   }, [importState.result]);
 
   const canImport = markdown.trim().length > 0 && !importState.isLoading;
@@ -235,12 +264,12 @@ export default function ImportPage() {
         },
         body: JSON.stringify({
           markdown,
-          projectId: 'e29422ac-a625-49b7-af2e-3977a45dffe1',
-          assigneeId: '06aec8c6-b939-491b-b711-f04d7670e045',
+          uploaderId: FIXED_USER_ID,
+          assigneeId: FIXED_USER_ID,
         }),
       });
 
-      const result: ImportResult = await response.json();
+      const result: FullImportResult = await response.json();
       
       setImportState({
         isLoading: false,
@@ -252,6 +281,15 @@ export default function ImportPage() {
         isLoading: false,
         result: {
           success: false,
+          phases: {
+            projectAnalysis: { success: false },
+            projectCreation: { success: false },
+            sprintCreation: { success: false },
+            detailedProcessing: { success: false },
+            epicProcessing: { success: false },
+            storyProcessing: { success: false },
+            taskProcessing: { success: false },
+          },
           feedback: {
             errors: [{
               type: 'CRITICAL',
@@ -271,10 +309,13 @@ export default function ImportPage() {
       <header className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-            Importar backlog con IA
+            Crear proyecto desde markdown con IA
           </h1>
           <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-            Pega tu especificación en markdown y la IA la procesará automáticamente para crear épicas, historias y tareas
+            Pega tu especificación en markdown y la IA creará automáticamente un proyecto completo con sprints, épicas, historias y tareas
+          </p>
+          <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
+            🤖 La IA creará un proyecto completo automáticamente con sprints secuenciales y asignación de tareas
           </p>
         </div>
         <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -317,7 +358,7 @@ export default function ImportPage() {
                       Procesando con IA...
                     </span>
                   ) : (
-                    '🤖 Procesar e Importar con IA'
+                    '🚀 Crear Proyecto con IA'
                   )}
                 </button>
                 
@@ -331,7 +372,7 @@ export default function ImportPage() {
               </div>
               
               <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
-                💡 La IA acepta múltiples formatos de markdown y completará automáticamente información faltante
+                🤖 La IA creará un proyecto completo automáticamente con sprints secuenciales y asignación de tareas
               </p>
             </div>
           </CardBody>
