@@ -122,9 +122,9 @@ export function BoardMetrics({ issues }: BoardMetricsProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className="px-6 py-4 bg-[var(--color-surface-secondary)] border-b border-[var(--color-border)]"
+      className="px-6 py-4 my-10 bg-[var(--color-surface-secondary)] border-b border-[var(--color-border)]"
     >
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 ">
         <MetricCard
           label="Total Issues"
           value={metrics.total}
