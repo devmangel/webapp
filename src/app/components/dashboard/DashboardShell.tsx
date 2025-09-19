@@ -59,7 +59,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isHydrated, isLoading, loadError } = useDashboardInit();
-  
+
   const activeProjectId = useDashboardStore((state) => state.activeProjectId);
   const filters = useDashboardStore((state) => state.filters);
   const projects = useDashboardStore((state) => state.projects);
@@ -81,9 +81,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
     return [
       { label: 'Overview', href: `${localePrefix}/dashboard/overview`, icon: Icons.overview },
-      { label: 'Team', href: `${localePrefix}/dashboard/team`, icon: Icons.team },
       { label: 'Board', href: projectBoardPath, icon: Icons.board },
       { label: 'Backlog', href: projectBacklogPath, icon: Icons.backlog },
+      { label: 'Team', href: `${localePrefix}/dashboard/team`, icon: Icons.team },
       { label: 'Import', href: `${localePrefix}/dashboard/import`, icon: Icons.import },
       { label: 'AI Preview', href: `${localePrefix}/dashboard/ai/preview`, icon: Icons.ai },
     ];
