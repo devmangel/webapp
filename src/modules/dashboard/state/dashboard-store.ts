@@ -91,7 +91,14 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
       set(() => ({
         ...data.snapshot,
         filters: data.filters,
-        baseFilters: data.filters,
+        baseFilters: {
+          ...data.filters,
+          sprintId: undefined,    // "Todos" para reset
+          assigneeId: undefined,  // "Todos" para reset  
+          issueType: 'ALL',      // "Todos" para reset
+          labels: [],            // Sin etiquetas para reset
+          searchTerm: '',        // Sin búsqueda para reset
+        },
         activeProjectId: data.activeProjectId ?? data.filters.projectId ?? '',
         isHydrated: true,
         isLoading: false,
@@ -110,19 +117,26 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
     const { projects, isHydrated } = get();
     if (!isHydrated || !projects[projectId]) return;
     const firstSprintId = projects[projectId].sprintIds[0];
-    set((state) => {
-      const newFilters: DashboardFilters = {
-        ...state.baseFilters,
+    set(() => {
+      // baseFilters: estado limpio para el botón "Limpiar"
+      const newBaseFilters: DashboardFilters = {
         projectId,
-        sprintId: firstSprintId,
-        assigneeId: undefined,
-        issueType: 'ALL',
-        labels: [],
-        searchTerm: '',
+        sprintId: undefined, // "Todos" - estado limpio
+        assigneeId: undefined, // "Todos" - estado limpio
+        issueType: 'ALL', // "Todos" - estado limpio
+        labels: [], // Sin etiquetas - estado limpio
+        searchTerm: '', // Sin búsqueda - estado limpio
       };
+      
+      // filters: estado inicial al cambiar proyecto (puede tener primer sprint)
+      const newFilters: DashboardFilters = {
+        ...newBaseFilters,
+        sprintId: firstSprintId, // Selecciona primer sprint por defecto
+      };
+      
       return {
         filters: newFilters,
-        baseFilters: newFilters,
+        baseFilters: newBaseFilters, // Estado limpio separado
         activeProjectId: projectId,
         selectedIssueId: undefined,
       };
