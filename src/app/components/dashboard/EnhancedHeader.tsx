@@ -2,7 +2,6 @@
 
 import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Typography } from '../ui/Typography';
 import { Button } from '../ui/Button';
 import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
 
@@ -65,8 +64,8 @@ function ProjectSelector() {
 
   if (!currentProject) return null;
 
-  // Crear display text: CODE: Nombre truncado...
-  const maxLength = 20;
+  // Crear display text más corto para ser consistente con otros filtros
+  const maxLength = 18;
   const displayText = currentProject.name.length > maxLength 
     ? `${currentProject.code}: ${currentProject.name.slice(0, maxLength)}...`
     : `${currentProject.code}: ${currentProject.name}`;
@@ -75,27 +74,23 @@ function ProjectSelector() {
 
   return (
     <div className="relative">
-      <span className="text-[var(--color-text-secondary)] text-xs">PROYECTO</span>
       <div
         onMouseEnter={() => setShowTooltip(isTextTruncated)}
         onMouseLeave={() => setShowTooltip(false)}
       >
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-3 px-3 py-2 text-left bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-surface-secondary)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 min-w-0 max-w-lg"
+          className="flex items-center gap-2 px-3 py-2 h-9 text-left bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md hover:bg-[var(--color-surface-secondary)] transition-colors focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-transparent min-w-32 max-w-48"
         >
           <div className="flex-1 min-w-0">
-            <Typography 
-              variant="h6" 
-              className="text-[var(--color-text-primary)] font-semibold truncate"
-            >
+            <span className="text-sm font-medium text-[var(--color-text-primary)] truncate block">
               {displayText}
-            </Typography>
+            </span>
           </div>
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="text-[var(--color-text-secondary)]"
+            className="text-[var(--color-text-secondary)] flex-shrink-0"
           >
             {Icons.chevronDown}
           </motion.div>
@@ -145,7 +140,7 @@ function ProjectSelector() {
                       setIsOpen(false);
                     }}
                     className={`
-                      w-full px-4 py-3 text-left hover:bg-[var(--color-surface-secondary)] transition-colors flex items-center justify-between
+                      w-full px-4 py-3 text-xs text-left hover:bg-[var(--color-surface-secondary)] transition-colors flex items-center justify-between
                       ${project.id === activeProjectId 
                         ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] border-r-2 border-[var(--color-primary)]' 
                         : 'text-[var(--color-text-primary)]'
@@ -185,8 +180,8 @@ function SearchBar() {
     <div className="relative">
       <motion.div
         className="flex items-center"
-        initial={{ width: 40 }}
-        animate={{ width: isExpanded ? 280 : 40 }}
+        initial={{ width: 36 }}
+        animate={{ width: isExpanded ? 240 : 36 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <div className="relative w-full">
@@ -200,8 +195,8 @@ function SearchBar() {
               if (!searchTerm) setIsExpanded(false);
             }}
             className={`
-              w-full h-10 pl-10 pr-4 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent
+              w-full h-9 pl-9 pr-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md 
+              focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-transparent
               placeholder-[var(--color-text-secondary)]
               ${!isExpanded ? 'opacity-0 cursor-pointer' : 'opacity-100'}
             `}
@@ -213,7 +208,7 @@ function SearchBar() {
           />
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+            className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors flex items-center justify-center w-4 h-4"
           >
             {Icons.search}
           </button>
@@ -223,7 +218,7 @@ function SearchBar() {
   );
 }
 
-function FiltersSection() {
+function InlineFilters() {
   const filters = useDashboardStore((state) => state.filters);
   const setFilters = useDashboardStore((state) => state.setFilters);
   const resetFilters = useDashboardStore((state) => state.resetFilters);
@@ -259,10 +254,77 @@ function FiltersSection() {
   ].filter(Boolean).length;
 
   return (
-    <div className="border-t border-[var(--color-border)]/50 pt-4 mt-4">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        {/* Filtros principales */}
-        <div className="flex flex-wrap items-center gap-3">
+    <>
+      {/* Desktop Inline Filters */}
+      <div className="hidden lg:flex items-center gap-3">
+        {/* Sprint */}
+        <select
+          value={filters.sprintId || ''}
+          onChange={(e) => setFilters({ sprintId: e.target.value || undefined })}
+          className="px-3 py-2 h-9 text-sm font-medium bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-transparent min-w-24"
+        >
+          <option value="">Sprint</option>
+          {sprintOptions.map((sprint) => (
+            <option key={sprint.id} value={sprint.id}>
+              {sprint.name.slice(0, 15)}...
+            </option>
+          ))}
+        </select>
+
+        {/* Responsable */}
+        <select
+          value={filters.assigneeId || ''}
+          onChange={(e) => setFilters({ assigneeId: e.target.value || undefined })}
+          className="px-3 py-2 h-9 text-sm font-medium bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-transparent min-w-28"
+        >
+          <option value="">Responsable</option>
+          {teamOptions.map((member) => (
+            <option key={member.id} value={member.id}>
+              {member.name.split(' ')[0]}
+            </option>
+          ))}
+        </select>
+
+        {/* Tipo */}
+        <select
+          value={filters.issueType}
+          onChange={(e) => setFilters({ issueType: e.target.value as typeof filters.issueType })}
+          className="px-3 py-2 h-9 text-sm font-medium bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] focus:border-transparent min-w-20"
+        >
+          <option value="ALL">Tipo</option>
+          <option value="EPIC">Epic</option>
+          <option value="STORY">Story</option>
+          <option value="TASK">Task</option>
+        </select>
+
+        {/* Contador e información */}
+        <div className="flex items-center gap-2 ml-3 pl-3 border-l border-[var(--color-border)]">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-[var(--color-text-secondary)]">
+              {matchingIssues.length} issues
+            </span>
+            {activeFiltersCount > 0 && (
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
+                {activeFiltersCount}
+              </span>
+            )}
+          </div>
+          
+          {activeFiltersCount > 0 && (
+            <button
+              onClick={resetFilters}
+              className="flex items-center justify-center w-7 h-7 text-xs bg-[var(--color-surface-secondary)] hover:bg-[var(--color-neutral)] border border-[var(--color-border)] rounded-md transition-colors text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+              title="Limpiar filtros"
+            >
+              {Icons.x}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Filters Panel */}
+      <div className="lg:hidden">
+        <div className="flex flex-col gap-3">
           {/* Sprint */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
@@ -271,7 +333,7 @@ function FiltersSection() {
             <select
               value={filters.sprintId || ''}
               onChange={(e) => setFilters({ sprintId: e.target.value || undefined })}
-              className="px-3 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent min-w-32"
+              className="px-3 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
             >
               <option value="">Todos</option>
               {sprintOptions.map((sprint) => (
@@ -290,7 +352,7 @@ function FiltersSection() {
             <select
               value={filters.assigneeId || ''}
               onChange={(e) => setFilters({ assigneeId: e.target.value || undefined })}
-              className="px-3 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent min-w-32"
+              className="px-3 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
             >
               <option value="">Todos</option>
               {teamOptions.map((member) => (
@@ -309,7 +371,7 @@ function FiltersSection() {
             <select
               value={filters.issueType}
               onChange={(e) => setFilters({ issueType: e.target.value as typeof filters.issueType })}
-              className="px-3 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent min-w-24"
+              className="px-3 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
             >
               <option value="ALL">Todos</option>
               <option value="EPIC">Epic</option>
@@ -317,34 +379,34 @@ function FiltersSection() {
               <option value="TASK">Task</option>
             </select>
           </div>
-        </div>
 
-        {/* Información y acciones */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[var(--color-text-secondary)]">
-              {matchingIssues.length} issues
-            </span>
-            {activeFiltersCount > 0 && (
-              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
-                {activeFiltersCount}
+          {/* Información y acciones para mobile */}
+          <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[var(--color-text-secondary)]">
+                {matchingIssues.length} issues
               </span>
+              {activeFiltersCount > 0 && (
+                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </div>
+            
+            {activeFiltersCount > 0 && (
+              <Button
+                size="sm"
+                onClick={resetFilters}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--color-surface-secondary)] hover:bg-[var(--color-neutral)] border border-[var(--color-border)] rounded-md transition-colors text-[var(--color-text-primary)] hover:text-[var(--color-text-primary)]"
+              >
+                <span className="text-[var(--color-text-secondary)]">{Icons.x}</span>
+                <span className="text-[var(--color-text-primary)]">Limpiar</span>
+              </Button>
             )}
           </div>
-          
-          {activeFiltersCount > 0 && (
-            <Button
-              size="sm"
-              onClick={resetFilters}
-              className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--color-surface-secondary)] hover:bg-[var(--color-neutral)] border border-[var(--color-border)] rounded-md transition-colors text-[var(--color-text-primary)] hover:text-[var(--color-text-primary)]"
-            >
-              <span className="text-[var(--color-text-secondary)]">{Icons.x}</span>
-              <span className="text-[var(--color-text-primary)]">Limpiar</span>
-            </Button>
-          )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -359,38 +421,39 @@ export function EnhancedHeader({
 
   return (
     <header className="bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]">
-      {/* Header Principal */}
-      <div className="px-4 py-4 lg:px-8">
-        <div className="flex items-center justify-between">
-          {/* Left Section - Project Selector */}
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            {/* Mobile Menu Button */}
-            <div className="lg:hidden">
-              <Button
-                size="sm"
-                onClick={onToggleMobileMenu}
-                className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[var(--color-neutral)] transition-colors border-none shadow-none"
-              >
-                <span className="text-[var(--color-text-secondary)]">
-                  {mobileMenuOpen ? Icons.close : Icons.menu}
-                </span>
-              </Button>
+      {/* Header Principal - Una sola fila en desktop */}
+      <div className="px-4 py-3 lg:px-8 lg:py-4">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left Section - Mobile Menu + Project Selector */}
+          <div className="flex items-center gap-3 min-w-0">
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden">
+            <Button
+              size="sm"
+              onClick={onToggleMobileMenu}
+              className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-[var(--color-neutral)] transition-colors border-none shadow-none"
+            >
+              <span className="text-[var(--color-text-secondary)]">
+                {mobileMenuOpen ? Icons.close : Icons.menu}
+              </span>
+            </Button>
+          </div>
+
+            {/* Project Selector - Más compacto en desktop */}
+            <div className="min-w-0">
+              <ProjectSelector />
             </div>
+          </div>
 
-            {/* Project Selector */}
-            <ProjectSelector />
-
+          {/* Center Section - Filtros inline (solo desktop) */}
+          <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+            <InlineFilters />
           </div>
 
           {/* Right Section - Search */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <SearchBar />
           </div>
-        </div>
-
-        {/* Filtros - Visible en desktop */}
-        <div className="hidden lg:block">
-          <FiltersSection />
         </div>
       </div>
 
@@ -405,7 +468,7 @@ export function EnhancedHeader({
             className="lg:hidden border-t border-[var(--color-border)] bg-[var(--color-surface-secondary)]"
           >
             <div className="p-4">
-              <FiltersSection />
+              <InlineFilters />
             </div>
           </motion.div>
         )}

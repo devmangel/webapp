@@ -1,10 +1,10 @@
-import { BoardContent } from './BoardContent';
+import { KanbanBoard } from 'components/board';
 
 interface BoardPageProps {
   params: Promise<{ locale: string; projectId: string }> | { locale: string; projectId: string };
 }
 
-export default async function BoardPage({ params }: BoardPageProps) {
-  const resolvedParams = await params;
-  return <BoardContent projectId={resolvedParams.projectId} />;
+export default async function BoardPage({ }: BoardPageProps) {
+
+  return <KanbanBoard />;
 }
