@@ -1,0 +1,9 @@
+// Exportaciones principales de componentes backlog
+export { BacklogMetrics } from './BacklogMetrics';
+export { CreateActionToolbar } from './CreateActionToolbar';
+export { PriorityIndicator } from './PriorityIndicator';
+export { StoryPointsBadge } from './StoryPointsBadge';
+export { SprintReadinessIndicator } from './SprintReadinessIndicator';
+export { EpicPlanningCard } from './EpicPlanningCard';
+export { StoryRefinementCard } from './StoryRefinementCard';
+export { BacklogPlanningView } from './BacklogPlanningView';
