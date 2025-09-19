@@ -6,85 +6,14 @@ import { Card, CardBody } from 'components/ui/Card';
 import { Typography } from 'components/ui/Typography';
 import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
 import { computeEpicStats, computeKpis, issueMatchesFilters } from 'app/components/utils/filters';
-import { formatDate, formatPercentage, formatPoints } from 'app/components/utils/format';
-import { Issue } from 'types/domain/dashboard';
-import { PRIORITY_LABELS } from 'app/components/dashboard/constants';
-
-interface KpiCardProps {
-  title: string;
-  value: string;
-  sublabel?: string;
-  accentClass?: string;
-  icon?: React.ReactNode;
-  index?: number;
-}
-
-function KpiCard({ title, value, sublabel, accentClass, icon, index = 0 }: KpiCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.4, 
-        delay: index * 0.1,
-        ease: "easeOut"
-      }}
-    >
-      <Card variant="elevated" hover className="group">
-        <CardBody className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <Typography variant="overline" color="secondary">
-                {title}
-              </Typography>
-              <Typography variant="display-sm" className="mt-2 font-bold">
-                {value}
-              </Typography>
-              {sublabel && (
-                <Typography 
-                  variant="caption" 
-                  color="secondary" 
-                  className={`mt-2 ${accentClass || ''}`}
-                >
-                  {sublabel}
-                </Typography>
-              )}
-            </div>
-            {icon && (
-              <div className="flex-shrink-0 ml-4 p-3 bg-amber-50 rounded-xl text-amber-600 group-hover:bg-amber-100 transition-colors dark:bg-amber-900/20 dark:text-amber-400">
-                {icon}
-              </div>
-            )}
-          </div>
-        </CardBody>
-      </Card>
-    </motion.div>
-  );
-}
-
-// Iconos para las KPI cards
-const Icons = {
-  total: (
-    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-    </svg>
-  ),
-  progress: (
-    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  inProgress: (
-    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  blocked: (
-    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364L18.364 5.636" />
-    </svg>
-  )
-};
+import { formatDate, formatPercentage } from 'app/components/utils/format';
+import { Issue, DashboardFilters, Epic } from 'types/domain/dashboard';
+import { KpiCard } from 'app/components/overview/KpiCard';
+import { EpicProgressCard } from 'app/components/overview/EpicProgressCard';
+import { BlockedIssueCard } from 'app/components/overview/BlockedIssueCard';
+import { TeamMemberCard } from 'app/components/overview/TeamMemberCard';
+import { ActivityTimeline } from 'app/components/overview/ActivityTimeline';
+import { Icons } from 'app/components/overview/icons';
 
 export default function OverviewPage() {
   const projects = useDashboardStore((state) => state.projects);
@@ -93,6 +22,7 @@ export default function OverviewPage() {
   const filters = useDashboardStore((state) => state.filters);
   const sprints = useDashboardStore((state) => state.sprints);
   const team = useDashboardStore((state) => state.team);
+  const activity = useDashboardStore((state) => state.activity);
 
   const project = projects[filters.projectId];
 
@@ -110,23 +40,65 @@ export default function OverviewPage() {
 
   const kpis = useMemo(() => computeKpis(filteredIssues), [filteredIssues]);
 
+  // Función helper para filtrar épicas
+  const filterEpicsByFilters = (epic: Epic, filters: DashboardFilters, filteredIssues: Issue[]) => {
+    // Si hay búsqueda, verificar si coincide con nombre o objetivo de la épica
+    if (filters.searchTerm) {
+      const searchTerm = filters.searchTerm.toLowerCase().trim();
+      const epicText = `${epic.name} ${epic.objective}`.toLowerCase();
+      const epicMatches = epicText.includes(searchTerm);
+
+      // Si la épica coincide por nombre, mostrarla siempre
+      if (epicMatches) return true;
+
+      // Si no coincide por nombre, mostrar solo si tiene issues que coinciden con los filtros
+      const epicIssues = filteredIssues.filter(issue => issue.epicId === epic.id);
+      return epicIssues.length > 0;
+    }
+
+    // Si hay otros filtros activos (sprint, assignee, tipo), mostrar solo épicas con issues relevantes
+    const hasActiveFilters = filters.sprintId || filters.assigneeId ||
+      (filters.issueType && filters.issueType !== 'ALL') ||
+      filters.labels.length > 0;
+
+    if (hasActiveFilters) {
+      const epicIssues = filteredIssues.filter(issue => issue.epicId === epic.id);
+      return epicIssues.length > 0;
+    }
+
+    // Sin filtros activos, mostrar todas las épicas
+    return true;
+  };
+
   const epicSummaries = useMemo(() => {
     if (!project) return [];
+
     return project.epicIds
       .map((epicId) => epics[epicId])
       .filter(Boolean)
+      .filter((epic) => filterEpicsByFilters(epic, filters, filteredIssues))
       .map((epic) => ({
         epic,
         stats: computeEpicStats(filteredIssues, epic.id),
       }));
-  }, [project, epics, filteredIssues]);
+  }, [project, epics, filteredIssues, filters]);
 
   const blockedIssues = filteredIssues.filter((issue) => issue.blocked);
   const currentSprint = filters.sprintId ? sprints[filters.sprintId] : undefined;
 
+  const activeTeamMembers = useMemo(() => {
+    return Object.values(team)
+      .filter((member) => member.active)
+      .map((member) => ({
+        member,
+        memberIssues: filteredIssues.filter((issue) => issue.assigneeId === member.id)
+      }))
+      .filter(({ memberIssues }) => memberIssues.length > 0);
+  }, [team, filteredIssues]);
+
   return (
-    <motion.div 
-      className="space-y-8"
+    <motion.div
+      className="space-y-8 pb-20"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -154,7 +126,7 @@ export default function OverviewPage() {
       <section>
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
-            title="Total de issues"
+            title="Total de tareas"
             value={kpis.total.toString()}
             sublabel={`${kpis.todo} pendientes`}
             icon={Icons.total}
@@ -186,154 +158,174 @@ export default function OverviewPage() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 border border-border-light/70 bg-white/90 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <header className="mb-4 flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-                  Progreso por épica
-                </h3>
-                <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-                  Conteo de historias y tareas por estado
-                </p>
+      {/* Layout Principal: Bloqueos y Distribución del Equipo */}
+      <section className="grid gap-6 md:gap-8 lg:grid-cols-2 lg:items-start">
+
+        {/* Distribución de Carga del Equipo */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
+          <div className="mb-5">
+            <Typography variant="h3" className="mb-2">
+              👥 Distribución de Carga del Equipo
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              Balance de trabajo y capacidad disponible por desarrollador
+            </Typography>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-1  min-h-[220px]">
+            {activeTeamMembers.map(({ member, memberIssues }, index) => (
+              <TeamMemberCard
+                key={member.id}
+                member={member}
+                memberIssues={memberIssues}
+                index={index}
+              />
+            ))}
+            {activeTeamMembers.length === 0 && (
+              <div className="col-span-full">
+                <Card className="border-dashed border-2 h-[200px] flex items-center justify-center">
+                  <CardBody className="text-center">
+                    <div className="text-4xl mb-3">👥</div>
+                    <Typography variant="body" color="secondary" className="font-medium">
+                      No hay miembros del equipo con issues asignados
+                    </Typography>
+                    <Typography variant="caption" color="secondary" className="mt-1">
+                      Los desarrolladores aparecerán aquí cuando tengan tareas asignadas
+                    </Typography>
+                  </CardBody>
+                </Card>
               </div>
-            </header>
-            <div className="space-y-4">
-              {epicSummaries.map(({ epic, stats }) => {
-                const completion = stats.total === 0 ? 0 : Math.round((stats.done / stats.total) * 100);
-                return (
-                  <article
-                    key={epic?.id}
-                    className="rounded-lg border border-border-light px-4 py-3 transition-colors hover:border-primary hover:shadow-sm dark:border-border-dark"
-                  >
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                      <div>
-                        <h4 className="text-sm font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-                          {epic?.name}
-                        </h4>
-                        <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
-                          {epic?.objective}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                        {completion}% completado
-                      </span>
-                    </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-textSecondary-light dark:text-textSecondary-dark sm:grid-cols-4">
-                      <div className="rounded-md bg-neutral-100 px-3 py-2 dark:bg-neutral-800">To Do: {stats.todo}</div>
-                      <div className="rounded-md bg-neutral-100 px-3 py-2 dark:bg-neutral-800">In Progress: {stats.inProgress}</div>
-                      <div className="rounded-md bg-neutral-100 px-3 py-2 dark:bg-neutral-800">In Review: {stats.inReview}</div>
-                      <div className="rounded-md bg-neutral-100 px-3 py-2 dark:bg-neutral-800">Done: {stats.done}</div>
-                    </div>
-                  </article>
-                );
-              })}
-              {epicSummaries.length === 0 ? (
-                <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-                  No hay épicas asociadas al proyecto seleccionado.
-                </p>
-              ) : null}
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="border border-border-light/70 bg-white/90 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <header className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-                  Bloqueos actuales
-                </h3>
-                <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
-                  Seguimiento a tareas que impiden el avance
-                </p>
-              </div>
-            </header>
-            <div className="mt-4 space-y-3">
-              {blockedIssues.map((issue) => {
-                const assignee = issue.assigneeId ? team[issue.assigneeId] : undefined;
-                return (
-                  <div
-                    key={issue.id}
-                    className="rounded-lg border border-red-200 bg-red-50 px-3 py-3 text-xs text-red-700 dark:border-red-400/50 dark:bg-red-500/10 dark:text-red-200"
-                  >
-                    <p className="text-sm font-semibold text-red-700 dark:text-red-200">
-                      {issue.key} · {issue.title}
-                    </p>
-                    <p className="mt-1 text-xs">Responsable: {assignee ? assignee.name : 'Sin asignar'}</p>
-                    <p className="mt-1 text-[11px] uppercase">
-                      {issue.updatedAt ? `Actualizado ${formatDate(issue.updatedAt)}` : ''}
-                    </p>
-                  </div>
-                );
-              })}
-              {blockedIssues.length === 0 ? (
-                <p className="rounded-md border border-border-light bg-white px-3 py-4 text-xs text-textSecondary-light dark:border-border-dark dark:bg-neutral-900/60 dark:text-textSecondary-dark">
-                  No hay issues bloqueados en el filtro actual.
-                </p>
-              ) : null}
-            </div>
-          </CardBody>
-        </Card>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Bloqueos Críticos */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="h-fit"
+        >
+          <div className="mb-4">
+            <Typography variant="h3" className="mb-2 flex items-center">
+              🚨 Bloqueos Críticos
+              {blockedIssues.length > 0 && (
+                <span className="ml-2 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 text-xs px-2 py-1 rounded-full">
+                  {blockedIssues.length}
+                </span>
+              )}
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              Tareas que requieren atención inmediata
+            </Typography>
+          </div>
+
+          <div className="space-y-3 min-h-[200px]">
+            {blockedIssues.map((issue, index) => {
+              const assignee = issue.assigneeId ? team[issue.assigneeId] : undefined;
+              return (
+                <BlockedIssueCard
+                  key={issue.id}
+                  issue={issue}
+                  assignee={assignee}
+                  index={index}
+                />
+              );
+            })}
+            {blockedIssues.length === 0 && (
+              <Card className="border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/10 h-[180px] flex items-center justify-center">
+                <CardBody className="text-center">
+                  <div className="text-4xl mb-3">✅</div>
+                  <Typography variant="body" className="text-green-700 dark:text-green-300 font-medium">
+                    ¡Excelente!
+                  </Typography>
+                  <Typography variant="caption" className="text-green-600 dark:text-green-400 mt-1">
+                    No hay issues bloqueados actualmente
+                  </Typography>
+                </CardBody>
+              </Card>
+            )}
+          </div>
+        </motion.div>
+
       </section>
 
+      {/* Progreso por Épicas */}
       <section>
-        <Card className="border border-border-light/70 bg-white/90 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <header className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-                Distribución de puntos por responsable
-              </h3>
-            </header>
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-full divide-y divide-border-light text-sm dark:divide-border-dark">
-                <thead className="bg-neutral-100/80 text-left text-xs uppercase tracking-wide text-textSecondary-light dark:bg-neutral-900/60 dark:text-textSecondary-dark">
-                  <tr>
-                    <th className="px-4 py-2">Responsable</th>
-                    <th className="px-4 py-2">Issues</th>
-                    <th className="px-4 py-2">Puntos</th>
-                    <th className="px-4 py-2">Prioridad dominante</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-light text-textSecondary-light dark:divide-border-dark dark:text-textSecondary-dark">
-                  {Object.values(team)
-                    .filter((member) => member.active)
-                    .map((member) => {
-                      const memberIssues = filteredIssues.filter((issue) => issue.assigneeId === member.id);
-                      const totalPoints = memberIssues.reduce((acc, issue) => acc + (issue.storyPoints ?? 0), 0);
-                      const highestPriority = memberIssues.reduce<'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null>((acc, issue) => {
-                        if (!acc) return issue.priority;
-                        const order: Record<'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL', number> = {
-                          CRITICAL: 0,
-                          HIGH: 1,
-                          MEDIUM: 2,
-                          LOW: 3,
-                        };
-                        return order[issue.priority] < order[acc] ? issue.priority : acc;
-                      }, null);
-
-                      if (memberIssues.length === 0) {
-                        return null;
-                      }
-
-                      return (
-                        <tr key={member.id}>
-                          <td className="px-4 py-2 font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-                            {member.name}
-                          </td>
-                          <td className="px-4 py-2">{memberIssues.length}</td>
-                          <td className="px-4 py-2">{formatPoints(totalPoints)}</td>
-                          <td className="px-4 py-2">
-                            {highestPriority ? PRIORITY_LABELS[highestPriority] : '—'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+        >
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <Typography variant="h3" className="flex items-center">
+                🎯 Progreso por Épicas
+                {project && project.epicIds.length > 0 && (
+                  <span className="ml-2 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 text-xs px-2 py-1 rounded-full">
+                    {epicSummaries.length} de {project.epicIds.length}
+                  </span>
+                )}
+              </Typography>
             </div>
-          </CardBody>
-        </Card>
+            <Typography variant="caption" color="secondary">
+              Vista visual del progreso y estado de cada épica del proyecto
+            </Typography>
+          </div>
+
+          <div className="space-y-4">
+            {epicSummaries.map(({ epic, stats }, index) => (
+              <EpicProgressCard
+                key={epic?.id}
+                epic={epic}
+                stats={stats}
+                index={index}
+              />
+            ))}
+            {epicSummaries.length === 0 && (
+              <Card className="border-dashed border-2">
+                <CardBody className="p-8 text-center">
+                  <div className="text-4xl mb-4">🎯</div>
+                  <Typography variant="body" color="secondary">
+                    No hay épicas asociadas al proyecto seleccionado
+                  </Typography>
+                </CardBody>
+              </Card>
+            )}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Actividad Reciente del Proyecto */}
+      <section>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+        >
+          <div className="mb-6">
+            <Typography variant="h3" className="mb-2">
+              📊 Actividad Reciente del Proyecto
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              Timeline de las últimas actividades y movimientos en el proyecto
+            </Typography>
+          </div>
+
+          <Card className="overflow-hidden">
+            <CardBody className="p-6">
+              <ActivityTimeline
+                activities={activity}
+                team={team}
+                issues={issues}
+              />
+            </CardBody>
+          </Card>
+        </motion.div>
       </section>
     </motion.div>
   );

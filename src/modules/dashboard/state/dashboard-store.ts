@@ -116,27 +116,20 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   setProject: (projectId) => {
     const { projects, isHydrated } = get();
     if (!isHydrated || !projects[projectId]) return;
-    const firstSprintId = projects[projectId].sprintIds[0];
     set(() => {
-      // baseFilters: estado limpio para el botón "Limpiar"
-      const newBaseFilters: DashboardFilters = {
+      // Estado limpio para todos los filtros - "Todos" por defecto
+      const allTodosFilters: DashboardFilters = {
         projectId,
-        sprintId: undefined, // "Todos" - estado limpio
-        assigneeId: undefined, // "Todos" - estado limpio
-        issueType: 'ALL', // "Todos" - estado limpio
-        labels: [], // Sin etiquetas - estado limpio
-        searchTerm: '', // Sin búsqueda - estado limpio
-      };
-      
-      // filters: estado inicial al cambiar proyecto (puede tener primer sprint)
-      const newFilters: DashboardFilters = {
-        ...newBaseFilters,
-        sprintId: firstSprintId, // Selecciona primer sprint por defecto
+        sprintId: undefined, // "Todos"
+        assigneeId: undefined, // "Todos" 
+        issueType: 'ALL', // "Todos"
+        labels: [], // Sin etiquetas
+        searchTerm: '', // Sin búsqueda
       };
       
       return {
-        filters: newFilters,
-        baseFilters: newBaseFilters, // Estado limpio separado
+        filters: allTodosFilters, // Filtros iniciales en "Todos"
+        baseFilters: allTodosFilters, // Estado limpio idéntico
         activeProjectId: projectId,
         selectedIssueId: undefined,
       };
