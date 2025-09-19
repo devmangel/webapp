@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
-import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from 'app/lib/store/dashboard-store';
 import { Issue, Sprint, TeamMember } from 'types/domain/dashboard';
 import { formatPoints } from 'app/components/utils/format';
 import { UTILIZATION_THRESHOLDS } from 'app/components/dashboard/constants';

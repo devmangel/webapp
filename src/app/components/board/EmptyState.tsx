@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Button } from '../ui/Button';
 import { Typography } from '../ui/Typography';
-import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from '../../lib/store/dashboard-store';
 
 const Icons = {
   project: (

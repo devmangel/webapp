@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Card, CardBody } from 'components/ui/Card';
 import { Typography } from 'components/ui/Typography';
-import { useDashboardStore } from 'modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from 'app/lib/store/dashboard-store';
 import { computeEpicStats, computeKpis, issueMatchesFilters } from 'app/components/utils/filters';
 import { formatDate, formatPercentage } from 'app/components/utils/format';
 import { Issue, DashboardFilters, Epic } from 'types/domain/dashboard';

@@ -1,6 +1,8 @@
+
 'use client';
 
 import { motion } from 'motion/react';
+import { useDraggable } from '@dnd-kit/core';
 import { Issue } from '../../../types/domain/dashboard';
 import { Typography } from '../ui/Typography';
 import { formatPoints } from '../utils/format';
@@ -9,7 +11,6 @@ interface IssueCardProps {
   issue: Issue;
   assigneeName?: string;
   onClick?: (issue: Issue) => void;
-  isDragActive?: boolean;
 }
 
 const Icons = {
@@ -66,40 +67,52 @@ const PRIORITY_CONFIG = {
   CRITICAL: { color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-200', label: 'Crítica' }
 };
 
-export function IssueCard({ issue, assigneeName, onClick, isDragActive }: IssueCardProps) {
+export function IssueCard({ issue, assigneeName, onClick }: IssueCardProps) {
+  // Configurar como elemento draggable con dnd-kit
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: issue.id,
+  });
+
   const typeConfig = ISSUE_TYPE_CONFIG[issue.type];
   const priorityConfig = PRIORITY_CONFIG[issue.priority];
   const hasComments = issue.comments && issue.comments.length > 0;
 
   const handleClick = () => {
-    if (!isDragActive) {
+    if (!isDragging) {
       onClick?.(issue);
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && !isDragActive) {
+    if (event.key === 'Enter' && !isDragging) {
       onClick?.(issue);
     }
   };
 
+  // Aplicar transformación de drag
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
+
   return (
     <motion.article
+      ref={setNodeRef}
+      style={style}
       layout
-      whileHover={{ scale: isDragActive ? 1 : 1.02, y: isDragActive ? 0 : -2 }}
+      whileHover={{ scale: isDragging ? 1 : 1.02, y: isDragging ? 0 : -2 }}
       whileTap={{ scale: 0.98 }}
       className={`
         group relative cursor-pointer select-none rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[var(--shadow-sm)] 
         hover:shadow-[var(--shadow-md)] transition-all duration-200 overflow-hidden
-        ${isDragActive ? 'rotate-2 opacity-50' : ''}
+        ${isDragging ? 'opacity-50' : ''}
         ${issue.blocked ? 'ring-2 ring-[var(--color-error)]/20 border-[var(--color-error)]/30' : ''}
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2
       `}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      tabIndex={0}
-      role="button"
       aria-label={`Issue ${issue.key}: ${issue.title}`}
+      {...attributes}
+      {...listeners}
     >
       {/* Header */}
       <div className="p-4 pb-2">

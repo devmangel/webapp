@@ -3,7 +3,7 @@
 import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../ui/Button';
-import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from '../../lib/store/dashboard-store';
 
 interface Project {
   id: string;

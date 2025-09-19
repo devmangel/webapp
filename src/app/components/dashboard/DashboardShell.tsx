@@ -2,7 +2,7 @@
 
 import { ReactNode, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from '../../lib/store/dashboard-store';
 import { useDashboardInit } from '../../../hooks/useDashboardInit';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardMainContent } from './DashboardMainContent';

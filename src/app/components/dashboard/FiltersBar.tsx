@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useMemo, useState } from 'react';
 import { clsx } from 'clsx';
-import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from '../../lib/store/dashboard-store';
 import { uniqueLabelsFromIssues } from '../utils/filters';
 
 export function FiltersBar() {

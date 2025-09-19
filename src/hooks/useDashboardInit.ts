@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useDashboardStore } from '../modules/dashboard/state/dashboard-store';
+import { useDashboardStore } from '../app/lib/store/dashboard-store';
 
 /**
  * Hook que maneja la inicialización automática del dashboard store

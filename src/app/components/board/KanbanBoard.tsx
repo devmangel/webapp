@@ -1,8 +1,19 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useDashboardStore } from '../../../modules/dashboard/state/dashboard-store';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from '@dnd-kit/core';
+import { useDashboardStore } from '../../lib/store/dashboard-store';
 import { Issue, IssueStatus } from '../../../types/domain/dashboard';
 import { BoardColumn } from './BoardColumn';
 import { BoardHeader } from './BoardHeader';
@@ -62,6 +73,48 @@ export function KanbanBoard({ className }: KanbanBoardProps) {
     isLoading
   } = useDashboardStore();
 
+  // Estados para dnd-kit
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
+
+  // Configurar sensores para dnd-kit
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Requiere mover 8px para activar drag
+      },
+    }),
+    useSensor(KeyboardSensor)
+  );
+
+  // Handlers para DndContext
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+    
+    // Encontrar el issue que se está arrastrando
+    const draggedIssue = filteredIssues.find(issue => issue.id === active.id);
+    setActiveIssue(draggedIssue || null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    setActiveId(null);
+    setActiveIssue(null);
+    
+    if (!over) return;
+    
+    const issueId = active.id as string;
+    const newStatus = over.id as IssueStatus;
+    
+    // Solo mover si el estado es diferente
+    const currentIssue = filteredIssues.find(issue => issue.id === issueId);
+    if (currentIssue && currentIssue.status !== newStatus) {
+      moveIssue(issueId, newStatus);
+    }
+  };
+
   // Filtrar issues según los filtros activos
   const filteredIssues = useMemo(() => {
     return Object.values(issues).filter(issue => {
@@ -108,10 +161,6 @@ export function KanbanBoard({ className }: KanbanBoardProps) {
   const hasActiveProject = currentProject && activeProjectId;
 
   // Handlers
-  const handleIssueDrop = (issueId: string, newStatus: IssueStatus) => {
-    moveIssue(issueId, newStatus);
-  };
-
   const handleIssueClick = (issue: Issue) => {
     setSelectedIssue(issue.id);
   };
@@ -140,53 +189,117 @@ export function KanbanBoard({ className }: KanbanBoardProps) {
   }
 
   return (
-    <div className={`flex flex-col h-full bg-[var(--color-app-background)] ${className || ''}`}>
-      {/* Header del Board */}
-      <BoardHeader 
-        project={currentProject}
-        totalIssues={filteredIssues.length}
-      />
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className={`flex flex-col h-full bg-[var(--color-app-background)] ${className || ''}`}>
+        {/* Header del Board */}
+        <BoardHeader 
+          project={currentProject}
+          totalIssues={filteredIssues.length}
+        />
 
-      {/* Métricas del Board */}
-      <BoardMetrics issues={filteredIssues} />
+        {/* Métricas del Board */}
+        <BoardMetrics issues={filteredIssues} />
 
-      {/* Tablero Kanban */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full px-4 pb-4">
-          <div className="flex gap-4 h-full overflow-x-auto">
-            <AnimatePresence mode="wait">
-              {BOARD_COLUMNS.map((column, index) => {
-                const columnIssues = issuesByStatus[column.status];
-                const isOverWip = column.wipLimit ? columnIssues.length > column.wipLimit : undefined;
-
-                return (
-                  <motion.div
-                    key={column.status}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex-shrink-0 w-80 h-full"
-                  >
-                    <BoardColumn
-                      status={column.status}
-                      title={column.title}
-                      description={column.description}
-                      accent={column.accent}
-                      issues={columnIssues}
-                      wipLimit={column.wipLimit}
-                      isOverWip={isOverWip}
-                      onIssueDrop={handleIssueDrop}
-                      onIssueClick={handleIssueClick}
-                      team={team}
+        {/* Tablero Kanban */}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full px-4 pb-4">
+            <div className="flex gap-4 h-full overflow-x-auto relative">
+              {/* Separadores verticales de altura completa */}
+              <div className="absolute inset-y-0 pointer-events-none">
+                {BOARD_COLUMNS.map((column, index) => {
+                  // No mostrar separador después de la última columna
+                  if (index === BOARD_COLUMNS.length - 1) return null;
+                  
+                  const separatorPosition = (index + 1) * 336; // w-80 = 320px + gap-4 = 16px = 336px
+                  
+                  let separatorColor = '';
+                  switch (column.status) {
+                    case 'TODO':
+                      separatorColor = activeId ? 'border-gray-400' : 'border-gray-300';
+                      break;
+                    case 'IN_PROGRESS':
+                      separatorColor = activeId ? 'border-blue-500' : 'border-blue-400';
+                      break;
+                    case 'IN_REVIEW':
+                      separatorColor = activeId ? 'border-amber-500' : 'border-amber-400';
+                      break;
+                    default:
+                      separatorColor = activeId ? 'border-gray-400' : 'border-gray-300';
+                  }
+                  
+                  return (
+                    <motion.div
+                      key={`separator-${column.status}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`
+                        absolute top-0 bottom-0 w-1 transition-all duration-300
+                        ${separatorColor}
+                        border-r-2 border-dashed
+                        ${activeId ? 'opacity-100 border-r-4' : 'opacity-60 border-r-2'}
+                      `}
+                      style={{
+                        left: `${separatorPosition - 8}px` // Centrar en el gap
+                      }}
                     />
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                  );
+                })}
+              </div>
+
+              <AnimatePresence mode="wait">
+                {BOARD_COLUMNS.map((column, index) => {
+                  const columnIssues = issuesByStatus[column.status];
+                  const isOverWip = column.wipLimit ? columnIssues.length > column.wipLimit : undefined;
+
+                  return (
+                    <motion.div
+                      key={column.status}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      className="flex-shrink-0 w-80 h-full relative z-10"
+                    >
+                      <BoardColumn
+                        status={column.status}
+                        title={column.title}
+                        description={column.description}
+                        accent={column.accent}
+                        issues={columnIssues}
+                        wipLimit={column.wipLimit}
+                        isOverWip={isOverWip}
+                        onIssueClick={handleIssueClick}
+                        team={team}
+                      />
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
+
+        {/* Drag Overlay para mostrar el elemento durante el drag */}
+        <DragOverlay>
+          {activeIssue ? (
+            <div className="opacity-80 rotate-6 transform">
+              <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-3 shadow-lg">
+                <h4 className="text-sm font-medium text-[var(--color-text-primary)]">
+                  {activeIssue.title}
+                </h4>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                  {activeIssue.key}
+                </p>
+              </div>
+            </div>
+          ) : null}
+        </DragOverlay>
       </div>
-    </div>
+    </DndContext>
   );
 }
