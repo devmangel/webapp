@@ -16,7 +16,6 @@ import {
 import { useDashboardStore } from '../../lib/store/dashboard-store';
 import { Issue, IssueStatus } from '../../../types/domain/dashboard';
 import { BoardColumn } from './BoardColumn';
-import { BoardHeader } from './BoardHeader';
 import { EmptyState } from './EmptyState';
 import { BoardMetrics } from './BoardMetrics';
 
@@ -196,11 +195,6 @@ export function KanbanBoard({ className }: KanbanBoardProps) {
       onDragEnd={handleDragEnd}
     >
       <div className={`flex flex-col h-full bg-[var(--color-app-background)] ${className || ''}`}>
-        {/* Header del Board */}
-        <BoardHeader 
-          project={currentProject}
-          totalIssues={filteredIssues.length}
-        />
 
         {/* Métricas del Board */}
         <BoardMetrics issues={filteredIssues} />
