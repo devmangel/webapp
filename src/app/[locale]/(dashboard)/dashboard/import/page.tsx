@@ -5,20 +5,13 @@ import {
   ImportHeader, 
   MarkdownEditor, 
   ResultsPanel, 
-  ProcessingSteps,
+  ProcessingOverlay,
   type FullImportResult 
 } from 'components/import';
 
 interface ImportState {
   isLoading: boolean;
   result: FullImportResult | null;
-}
-
-interface ProcessingStep {
-  id: string;
-  label: string;
-  status: 'pending' | 'processing' | 'completed' | 'error';
-  description?: string;
 }
 
 // Usuario fijo para todas las operaciones
@@ -59,7 +52,6 @@ export default function ImportPage() {
     isLoading: false,
     result: null,
   });
-  const [processingSteps, setProcessingSteps] = useState<ProcessingStep[]>([]);
 
   const stats = useMemo(() => {
     if (importState.result?.summary) {
@@ -75,40 +67,15 @@ export default function ImportPage() {
     setMarkdown(exampleMarkdown);
   };
 
-  const simulateProcessingSteps = () => {
-    const steps: ProcessingStep[] = [
-      { id: 'analysis', label: 'Analizando especificación', status: 'processing', description: 'Extrayendo estructura y elementos' },
-      { id: 'project', label: 'Creando proyecto', status: 'pending', description: 'Configuración inicial del proyecto' },
-      { id: 'sprints', label: 'Generando sprints', status: 'pending', description: 'Organizando trabajo en sprints' },
-      { id: 'epics', label: 'Procesando épicas', status: 'pending', description: 'Creando épicas y objetivos' },
-      { id: 'stories', label: 'Creando historias', status: 'pending', description: 'Generando historias de usuario' },
-      { id: 'tasks', label: 'Asignando tareas', status: 'pending', description: 'Distribuyendo tareas y estimaciones' }
-    ];
-    
-    setProcessingSteps(steps);
-
-    // Simular progreso secuencial
-    let currentIndex = 0;
-    const processNext = () => {
-      if (currentIndex < steps.length) {
-        setProcessingSteps(prev => prev.map((step, index) => {
-          if (index === currentIndex) return { ...step, status: 'completed' };
-          if (index === currentIndex + 1) return { ...step, status: 'processing' };
-          return step;
-        }));
-        currentIndex++;
-        setTimeout(processNext, 800);
-      }
-    };
-    
-    setTimeout(processNext, 500);
+  const handleProcessingComplete = () => {
+    // El overlay se completó, ya no se muestra
+    // Los resultados reales ya están en importState.result
   };
 
   const handleImport = async () => {
     if (!canImport) return;
 
     setImportState({ isLoading: true, result: null });
-    simulateProcessingSteps();
 
     try {
       const response = await fetch('/api/dashboard/import', {
@@ -129,7 +96,6 @@ export default function ImportPage() {
         isLoading: false,
         result,
       });
-      setProcessingSteps([]);
     } catch (error) {
       console.error('Error en importación:', error);
       setImportState({
@@ -156,7 +122,6 @@ export default function ImportPage() {
           }
         }
       });
-      setProcessingSteps(prev => prev.map(step => ({ ...step, status: 'error' as const })));
     }
   };
 
@@ -219,11 +184,6 @@ export default function ImportPage() {
 
             {/* Panel de resultados - 5 columnas en desktop */}
             <div className="lg:col-span-5 space-y-6">
-              {/* Indicador de progreso durante procesamiento */}
-              {importState.isLoading && processingSteps.length > 0 && (
-                <ProcessingSteps steps={processingSteps} />
-              )}
-              
               {/* Panel de resultados */}
               <ResultsPanel
                 result={importState.result}
@@ -233,6 +193,13 @@ export default function ImportPage() {
           </div>
         </div>
       </div>
+
+      {/* Overlay de procesamiento sofisticado */}
+      <ProcessingOverlay
+        isVisible={importState.isLoading}
+        onComplete={handleProcessingComplete}
+        backendCompleted={!!importState.result}
+      />
     </div>
   );
 }

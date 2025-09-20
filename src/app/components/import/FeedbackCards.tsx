@@ -7,12 +7,16 @@ interface FeedbackCardsProps {
   errors: FeedbackItem[];
   warnings: FeedbackItem[];
   completions: Completion[];
+  isCompact?: boolean;
+  onViewMore?: (type: 'errors' | 'warnings' | 'completions') => void;
 }
 
 const FeedbackCards = memo(function FeedbackCards({
   errors,
   warnings,
-  completions
+  completions,
+  isCompact = false,
+  onViewMore
 }: FeedbackCardsProps) {
   if (errors.length === 0 && warnings.length === 0 && completions.length === 0) {
     return null;
@@ -37,18 +41,18 @@ const FeedbackCards = memo(function FeedbackCards({
                 Estos errores impiden completar la importación
               </p>
               <ul className="mt-3 space-y-3">
-                {errors.map((error, index) => (
+                {(isCompact ? errors.slice(0, 2) : errors).map((error, index) => (
                   <li key={index} className="rounded-lg bg-white/60 border border-red-100 p-3 dark:bg-red-900/20 dark:border-red-800/30">
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-red-800 dark:text-red-200">
                         {error.message}
                       </p>
-                      {error.location && (
+                      {!isCompact && error.location && (
                         <p className="text-xs text-red-600 dark:text-red-400">
                           📍 Ubicación: {error.location}
                         </p>
                       )}
-                      {error.suggestion && (
+                      {!isCompact && error.suggestion && (
                         <div className="mt-2 rounded-md bg-red-100/50 px-3 py-2 dark:bg-red-800/20">
                           <p className="text-xs text-red-700 dark:text-red-300">
                             💡 Sugerencia: {error.suggestion}
@@ -59,6 +63,18 @@ const FeedbackCards = memo(function FeedbackCards({
                   </li>
                 ))}
               </ul>
+              {isCompact && errors.length > 2 && onViewMore && (
+                <button
+                  type="button"
+                  onClick={() => onViewMore('errors')}
+                  className="mt-3 inline-flex items-center text-xs font-medium text-red-700 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200 transition-colors"
+                >
+                  Ver todos los {errors.length} errores
+                  <svg className="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -81,18 +97,18 @@ const FeedbackCards = memo(function FeedbackCards({
                 Recomendaciones para mejorar la especificación
               </p>
               <ul className="mt-3 space-y-3">
-                {warnings.map((warning, index) => (
+                {(isCompact ? warnings.slice(0, 2) : warnings).map((warning, index) => (
                   <li key={index} className="rounded-lg bg-white/60 border border-amber-100 p-3 dark:bg-amber-900/20 dark:border-amber-800/30">
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                         {warning.message}
                       </p>
-                      {warning.location && (
+                      {!isCompact && warning.location && (
                         <p className="text-xs text-amber-600 dark:text-amber-400">
                           📍 Ubicación: {warning.location}
                         </p>
                       )}
-                      {warning.suggestion && (
+                      {!isCompact && warning.suggestion && (
                         <div className="mt-2 rounded-md bg-amber-100/50 px-3 py-2 dark:bg-amber-800/20">
                           <p className="text-xs text-amber-700 dark:text-amber-300">
                             💡 Sugerencia: {warning.suggestion}
@@ -103,6 +119,18 @@ const FeedbackCards = memo(function FeedbackCards({
                   </li>
                 ))}
               </ul>
+              {isCompact && warnings.length > 2 && onViewMore && (
+                <button
+                  type="button"
+                  onClick={() => onViewMore('warnings')}
+                  className="mt-3 inline-flex items-center text-xs font-medium text-amber-700 hover:text-amber-800 dark:text-amber-300 dark:hover:text-amber-200 transition-colors"
+                >
+                  Ver todas las {warnings.length} advertencias
+                  <svg className="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -125,7 +153,7 @@ const FeedbackCards = memo(function FeedbackCards({
                 La IA completó automáticamente estos elementos
               </p>
               <ul className="mt-3 space-y-3">
-                {completions.map((completion, index) => {
+                {(isCompact ? completions.slice(0, 2) : completions).map((completion, index) => {
                   const displayValue = typeof completion.generated === 'number' 
                     ? `${completion.generated} puntos` 
                     : completion.generated;
@@ -137,9 +165,11 @@ const FeedbackCards = memo(function FeedbackCards({
                           <p className="text-sm font-medium text-green-800 dark:text-green-200">
                             {completion.target}
                           </p>
-                          <p className="text-xs text-green-600 dark:text-green-400">
-                            {completion.type}
-                          </p>
+                          {!isCompact && (
+                            <p className="text-xs text-green-600 dark:text-green-400">
+                              {completion.type}
+                            </p>
+                          )}
                         </div>
                         <div className="flex-shrink-0">
                           <div className="rounded-full bg-green-100 px-2 py-1 dark:bg-green-800/30">
@@ -153,6 +183,18 @@ const FeedbackCards = memo(function FeedbackCards({
                   );
                 })}
               </ul>
+              {isCompact && completions.length > 2 && onViewMore && (
+                <button
+                  type="button"
+                  onClick={() => onViewMore('completions')}
+                  className="mt-3 inline-flex items-center text-xs font-medium text-green-700 hover:text-green-800 dark:text-green-300 dark:hover:text-green-200 transition-colors"
+                >
+                  Ver todas las {completions.length} mejoras IA
+                  <svg className="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         </div>
