@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from './server-client';
+import { createSupabaseServerClient } from '../../../app/lib/supabase/server-client';
 import type { Database } from 'types/database/schema';
 import type { StoryImport } from 'types/domain/import';
 

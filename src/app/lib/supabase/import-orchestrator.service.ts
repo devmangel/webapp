@@ -1,9 +1,9 @@
 import { MarkdownProcessor } from '../ai/markdown-processor';
-import { ProjectCreationService } from './project-creation.service';
-import { SprintGenerationService } from './sprint-generation.service';
-import { EpicProcessingService } from './epic-processing.service';
-import { StoryProcessingService } from './story-processing.service';
-import { TaskProcessingService } from './task-processing.service';
+import { ProjectCreationService } from 'modules/projects/services/project-creation.service';
+import { SprintGenerationService } from 'modules/sprints/services/sprint-generation.service';
+import { EpicProcessingService } from 'modules/epics/services/epic-processing.service';
+import { StoryProcessingService } from 'modules/issues/services/story-processing.service';
+import { TaskProcessingService } from 'modules/issues/services/task-processing.service';
 
 import type { 
   ImportRequest, 
