@@ -9,8 +9,8 @@ import { AuthPageProps } from '../shared/types'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Registro | MiApp',
-    description: 'Crea tu cuenta en MiApp y únete a nuestra comunidad',
+    title: 'Registro | PAI Kanvás',
+    description: 'Crea tu cuenta en PAI Kanvás y transforma la gestión de tus proyectos',
     robots: {
       index: false,
       follow: false,
@@ -36,8 +36,8 @@ export async function SignupPage({ searchParams }: AuthPageProps) {
   return (
     <AuthLayout>
       <AuthCard
-        title="Crea tu cuenta"
-        subtitle="Únete a MiApp y empieza tu experiencia"
+        title="Únete a PAI Kanvás"
+        subtitle="Crea tu cuenta y descubre el poder de la gestión inteligente"
       >
         <SignupForm
           callbackUrl={callbackUrl}

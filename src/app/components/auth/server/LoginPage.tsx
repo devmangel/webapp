@@ -9,8 +9,8 @@ import { AuthPageProps } from '../shared/types'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Iniciar Sesión | MiApp',
-    description: 'Inicia sesión en tu cuenta de MiApp',
+    title: 'Iniciar Sesión | PAI Kanvás',
+    description: 'Accede a tu cuenta de PAI Kanvás y gestiona tus proyectos de forma inteligente',
     robots: {
       index: false,
       follow: false,

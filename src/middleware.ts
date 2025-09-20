@@ -8,6 +8,8 @@ export default createMiddleware(routing);
 export const config = {
   runtime: 'nodejs',
   matcher: [
-    '/'
+    // Incluye la raíz y rutas principales para redirección de locale
+    '/',
+    '/((?!api|_next|_vercel|.*\\..*).*)' // Excluye API routes, assets estáticos y archivos
   ]
 };
