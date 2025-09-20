@@ -277,7 +277,7 @@ export class EpicProcessingService {
       }
 
       // Validar prioridad
-      if (epic.priority < 1 || epic.priority > 10) {
+      if (epic.priority != 'CRÍTICA' && epic.priority != 'ALTA' && epic.priority != 'MEDIA' && epic.priority != 'BAJA' && epic.priority != 'PENDIENTE') {
         epicErrors.push(`Prioridad inválida: ${epic.priority}`);
       }
 
