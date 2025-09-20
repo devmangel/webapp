@@ -2,8 +2,8 @@
  * Tipos relacionados con filtros y búsquedas del dashboard
  */
 
-import { IssueType } from '../../shared/common';
-import { BaseFilters } from '../../shared/api';
+import { IssueType } from '../shared/common';
+import { BaseFilters } from '../shared/api';
 
 // Filtros específicos del dashboard
 export interface DashboardFilters extends BaseFilters {

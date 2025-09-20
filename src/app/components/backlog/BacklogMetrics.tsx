@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Card, CardBody } from 'components/ui/Card';
 import { Typography } from 'components/ui/Typography';
-import { Issue, Epic } from 'types/domain/dashboard';
+import { Issue, Epic } from 'types/domain';
 // Iconos SVG personalizados
 const Icons = {
   storyPoints: (

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ImportOrchestrator } from 'app/lib/supabase/import-orchestrator.service';
-import type { ImportRequest } from 'types/domain/dashboard/import';
+import type { ImportRequest } from 'types/domain/import';
 
 export async function POST(request: NextRequest) {
   try {

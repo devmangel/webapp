@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useDashboardStore } from '../../lib/store/dashboard-store';
-import { Issue, Epic } from 'types/domain/dashboard';
+import { Issue, Epic } from 'types/domain';
 import { issueMatchesFilters } from '../utils/filters';
 import { BacklogMetrics } from './BacklogMetrics';
 import { EpicPlanningCard } from './EpicPlanningCard';

@@ -1,4 +1,4 @@
-import { Issue, AuditLogEntry, Epic, TeamMember } from 'types/domain/dashboard';
+import { Issue, AuditLogEntry, Epic, TeamMember } from 'types/domain';
 
 export interface KpiCardProps {
   title: string;

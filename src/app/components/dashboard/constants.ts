@@ -1,4 +1,4 @@
-import { IssueStatus, IssueType } from 'types/domain/dashboard';
+import { IssueStatus, IssueType } from 'types/domain';
 
 export const BOARD_COLUMNS: { key: IssueStatus; title: string; wipLimit?: number; accent: string }[] = [
   { key: 'TODO', title: 'To Do', wipLimit: 12, accent: 'border-gray-300' },

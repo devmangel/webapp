@@ -8,7 +8,7 @@ import {
   ConfidenceLevel, 
   AiMode, 
   IssueSubType 
-} from '../../shared/common';
+} from '../shared/common';
 import { Epic, Issue, Sprint, Project, TeamMember, AssignmentRule } from './entities';
 
 // Actividad de issue

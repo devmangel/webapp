@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Database } from '../../database/schema';
+import type { Database } from '../database/schema';
 
 // Helper types para datos entre fases del orquestador
 type EpicRow = Database['public']['Tables']['epics']['Row'];

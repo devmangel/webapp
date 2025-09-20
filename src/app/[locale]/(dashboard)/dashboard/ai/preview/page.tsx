@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useCallback } from 'react';
 import { useDashboardStore } from 'app/lib/store/dashboard-store';
-import { Issue } from 'types/domain/dashboard';
+import { Issue } from 'types/domain';
 import { 
   AiPreviewHeader,
   AiConfigurationPanel,

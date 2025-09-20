@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useState, useMemo } from 'react';
-import type { FullImportResult } from 'types/domain/dashboard/import';
+import type { FullImportResult } from 'types/domain/import';
 
 interface DetailedResultsListProps {
   result: FullImportResult;

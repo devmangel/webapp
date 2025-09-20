@@ -1,6 +1,6 @@
 import { createSupabaseServerClient } from './server-client';
 import type { Database } from 'types/database/schema';
-import type { TaskImport } from 'types/domain/dashboard/import';
+import type { TaskImport } from 'types/domain/import';
 
 // Helper types
 type IssueInsert = Database['public']['Tables']['issues']['Insert'];

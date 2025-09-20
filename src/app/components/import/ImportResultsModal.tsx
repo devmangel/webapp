@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useState, useEffect } from 'react';
-import type { FullImportResult } from 'types/domain/dashboard/import';
+import type { FullImportResult } from 'types/domain/import';
 import FeedbackCards from './FeedbackCards';
 import DetailedResultsList from './DetailedResultsList';
 

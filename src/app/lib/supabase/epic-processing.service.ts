@@ -1,6 +1,6 @@
 import { createSupabaseServerClient } from './server-client';
 import type { Database } from 'types/database/schema';
-import type { EpicBasicInfo, SprintMapping } from 'types/domain/dashboard/import';
+import type { EpicBasicInfo, SprintMapping } from 'types/domain/import';
 
 // Helper types
 type EpicInsert = Database['public']['Tables']['epics']['Insert'];

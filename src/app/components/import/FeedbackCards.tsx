@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import type { FeedbackItem, Completion } from 'types/domain/dashboard/import';
+import type { FeedbackItem, Completion } from 'types/domain/import';
 
 interface FeedbackCardsProps {
   errors: FeedbackItem[];

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Card, CardBody } from '../ui/Card';
 import { TeamMemberCard } from './TeamMemberCard';
 import { useDashboardStore } from 'app/lib/store/dashboard-store';
-import { TeamMember, Issue } from 'types/domain/dashboard';
+import { TeamMember, Issue } from 'types/domain';
 import { formatPoints } from '../utils/format';
 
 interface TeamDashboardProps {

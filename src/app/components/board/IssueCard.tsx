@@ -3,7 +3,7 @@
 
 import { motion } from 'motion/react';
 import { useDraggable } from '@dnd-kit/core';
-import { Issue } from '../../../types/domain/dashboard';
+import { Issue } from '../../../types/domain';
 import { Typography } from '../ui/Typography';
 import { formatPoints } from '../utils/format';
 

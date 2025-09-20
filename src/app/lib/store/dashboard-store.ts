@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { AssignmentRule, AuditLogEntry, DashboardFilters, DashboardStateSnapshot, Issue, IssueStatus } from 'types/domain/dashboard';
+import { AssignmentRule, AuditLogEntry, DashboardFilters, DashboardStateSnapshot, Issue, IssueStatus } from 'types/domain';
 
 // Simple uuid fallback if the package is not available
 function generateId() {

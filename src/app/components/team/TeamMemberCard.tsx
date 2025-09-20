@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Card, CardBody } from '../ui/Card';
-import { TeamMember } from 'types/domain/dashboard';
+import { TeamMember } from 'types/domain';
 import { formatPoints } from '../utils/format';
 
 interface TeamMemberCardProps {
@@ -157,7 +157,7 @@ export function TeamMemberCard({
                 Utilización
               </span>
               <span className={`text-xs font-bold px-2 py-1 rounded-full ${getUtilizationColor(correctedUtilization, assignedPoints > 0)}`}>
-                {member.capacityPerSprint === 0 && assignedPoints > 0 ? '∞' : Math.round(correctedUtilization * 100)}% • {getUtilizationStatus(correctedUtilization, assignedPoints > 0)}
+                {member.capacityPerSprint === 0 && assignedPoints > 0 ? '+200' : Math.round(correctedUtilization * 100)}% • {getUtilizationStatus(correctedUtilization, assignedPoints > 0)}
               </span>
             </div>
             <div className="h-2 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">

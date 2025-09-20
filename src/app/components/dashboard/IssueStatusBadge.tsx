@@ -2,7 +2,7 @@
 
 import { clsx } from 'clsx';
 import { ISSUE_STATUS_COLOR, ISSUE_STATUS_LABEL } from './constants';
-import { IssueStatus } from 'types/domain/dashboard';
+import { IssueStatus } from 'types/domain';
 
 export function IssueStatusBadge({ status }: { status: IssueStatus }) {
   return (

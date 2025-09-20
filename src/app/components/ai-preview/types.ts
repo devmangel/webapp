@@ -1,4 +1,4 @@
-import { Issue } from 'types/domain/dashboard';
+import { Issue } from 'types/domain';
 
 export type Mode = 'CONSERVADOR' | 'BALANCEADO' | 'CREATIVO';
 

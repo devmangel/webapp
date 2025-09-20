@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Card, CardBody } from 'components/ui/Card';
 import { Typography } from 'components/ui/Typography';
-import { Epic, Issue, TeamMember } from 'types/domain/dashboard';
+import { Epic, Issue, TeamMember } from 'types/domain';
 import { StoryRefinementCard } from './StoryRefinementCard';
 import { PriorityIndicator } from './PriorityIndicator';
 import { StoryPointsBadge } from './StoryPointsBadge';

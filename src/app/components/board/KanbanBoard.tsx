@@ -14,7 +14,7 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import { useDashboardStore } from '../../lib/store/dashboard-store';
-import { Issue, IssueStatus } from '../../../types/domain/dashboard';
+import { Issue, IssueStatus } from '../../../types/domain';
 import { BoardColumn } from './BoardColumn';
 import { EmptyState } from './EmptyState';
 import { BoardMetrics } from './BoardMetrics';

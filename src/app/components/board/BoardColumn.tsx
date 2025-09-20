@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useDroppable } from '@dnd-kit/core';
-import { Issue, TeamMember, IssueStatus } from '../../../types/domain/dashboard';
+import { Issue, TeamMember, IssueStatus } from '../../../types/domain';
 import { IssueCard } from './IssueCard';
 import { Typography } from '../ui/Typography';
 

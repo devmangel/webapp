@@ -49,7 +49,7 @@ Cada página es un Client Component que consume directamente desde el store, gar
 
 ## 🚀 Extender el dashboard
 1. **Persistir acciones**: reemplaza mutaciones locales por Server Actions (p.ej. `app/(dashboard)/actions/updateIssue.ts`) que llamen a Supabase y luego sincronicen el store.
-2. **Nuevos filtros**: agrega campos en `DashboardFilters` (`src/types/domain/dashboard/filters.ts`) y actualiza `FiltersBar` + `issueMatchesFilters`.
+2. **Nuevos filtros**: agrega campos en `DashboardFilters` (`src/types/domain/filters.ts`) y actualiza `FiltersBar` + `issueMatchesFilters`.
 3. **Integraciones externas**: usa `assignment_rules` y `audit_log` como ejemplo de tablas auxiliares para automatizaciones.
 
 ## Seed rapido

@@ -1,6 +1,6 @@
 import { createSupabaseServerClient } from './server-client';
 import type { Database } from 'types/database/schema';
-import type { ProjectMetadata, ProjectCreationResult } from 'types/domain/dashboard/import';
+import type { ProjectMetadata, ProjectCreationResult } from 'types/domain/import';
 
 // Helper types
 type ProjectInsert = Database['public']['Tables']['projects']['Insert'];

@@ -7,7 +7,7 @@ import {
   type AIProcessedBacklog, 
   type ProjectAnalysis, 
   type DetailedContent 
-} from 'types/domain/dashboard/import';
+} from 'types/domain/import';
 
 /**
  * Servicio para procesar markdown con IA usando estrategia híbrida

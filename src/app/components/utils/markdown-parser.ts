@@ -1,4 +1,4 @@
-import { MarkdownImportResult, EpicDraft, StoryDraft, TaskDraft, IssueSubType } from 'types/domain/dashboard';
+import { MarkdownImportResult, EpicDraft, StoryDraft, TaskDraft, IssueSubType } from 'types/domain';
 
 const TASK_PREFIX_TO_TYPE: Record<string, IssueSubType> = {
   FE: 'FE',

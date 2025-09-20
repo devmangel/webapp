@@ -16,7 +16,7 @@ import type {
   EpicProcessingData,
   StoryProcessingData,
   TaskProcessingData
-} from 'types/domain/dashboard/import';
+} from 'types/domain/import';
 
 // Constante del desarrollador fijo
 const FIXED_DEVELOPER_ID = '06aec8c6-b939-491b-b711-f04d7670e045';

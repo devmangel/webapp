@@ -1,4 +1,4 @@
-import { DashboardFilters, Issue, IssueStatus } from 'types/domain/dashboard';
+import { DashboardFilters, Issue, IssueStatus } from 'types/domain';
 
 const normalizedSearch = (value?: string) => value?.toLowerCase().trim() ?? '';
 

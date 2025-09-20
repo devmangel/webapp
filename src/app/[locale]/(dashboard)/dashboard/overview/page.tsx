@@ -7,7 +7,7 @@ import { Typography } from 'components/ui/Typography';
 import { useDashboardStore } from 'app/lib/store/dashboard-store';
 import { computeEpicStats, computeKpis, issueMatchesFilters } from 'app/components/utils/filters';
 import { formatDate, formatPercentage } from 'app/components/utils/format';
-import { Issue, DashboardFilters, Epic } from 'types/domain/dashboard';
+import { Issue, DashboardFilters, Epic } from 'types/domain';
 import { KpiCard } from 'app/components/overview/KpiCard';
 import { EpicProgressCard } from 'app/components/overview/EpicProgressCard';
 import { BlockedIssueCard } from 'app/components/overview/BlockedIssueCard';

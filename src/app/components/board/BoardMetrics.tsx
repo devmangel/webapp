@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Issue } from '../../../types/domain/dashboard';
+import { Issue } from '../../../types/domain';
 
 interface BoardMetricsProps {
   issues: Issue[];

@@ -4,7 +4,7 @@ import { memo, useState } from 'react';
 import { Card, CardBody } from 'components/ui/Card';
 import ResultsSummaryCard from './ResultsSummaryCard';
 import ImportResultsModal from './ImportResultsModal';
-import type { FullImportResult } from 'types/domain/dashboard/import';
+import type { FullImportResult } from 'types/domain/import';
 
 interface ResultsPanelProps {
   result: FullImportResult | null;

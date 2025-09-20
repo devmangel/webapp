@@ -1,6 +1,6 @@
 'use client';
 
-import { Issue } from 'types/domain/dashboard';
+import { Issue } from 'types/domain';
 
 interface SprintReadinessIndicatorProps {
   issue: Issue;

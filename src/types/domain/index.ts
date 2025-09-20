@@ -25,4 +25,4 @@ export type {
   AuditScope,
   ConfidenceLevel,
   AiMode
-} from '../../shared/common';
+} from '../shared/common';

@@ -10,7 +10,7 @@ import {
   Sprint,
   TeamMember,
   Project,
-} from 'types/domain/dashboard';
+} from 'types/domain';
 import {
   UsersRow,
   ProjectsRow,

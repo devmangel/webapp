@@ -41,7 +41,7 @@ La autenticación se resuelve en el servidor y los datos se consultan vía Supab
 - Funciones utilitarias para KPI, filtros y formato viven en `src/app/components/utils/`, manteniendo la lógica presentacional agrupada.
 
 ## 🗂️ Tipos compartidos
-- Todos los tipos de dominio del dashboard se centralizan en `src/types/domain/dashboard/`. El índice re-exporta entidades, filtros y workflows, además de alias convenientes (`IssueStatus`, `Priority`, etc.).
+- Todos los tipos de dominio del dashboard se centralizan en `src/types/domain/`. El índice re-exporta entidades, filtros y workflows, además de alias convenientes (`IssueStatus`, `Priority`, etc.).
 - Los tipos generados desde Supabase están en `src/types/database/` y sirven para mapear filas SQL en la API del dashboard.
 
 Esta arquitectura favorece componentes de servidor para obtener datos seguros, componentes cliente livianos para interacción, y un único store global para sincronizar las distintas vistas del panel.

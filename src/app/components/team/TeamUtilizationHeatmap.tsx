@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { Card, CardBody } from '../ui/Card';
 import Image from 'next/image';
 import { useDashboardStore } from 'app/lib/store/dashboard-store';
-import { TeamMember, Issue, Sprint } from 'types/domain/dashboard';
+import { TeamMember, Issue, Sprint } from 'types/domain';
 import { formatPoints } from '../utils/format';
 import { UTILIZATION_THRESHOLDS } from '../dashboard/constants';
 

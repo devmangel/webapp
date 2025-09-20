@@ -14,4 +14,4 @@ export type {
   FeedbackItem, 
   Completion, 
   FullImportResult 
-} from 'types/domain/dashboard/import';
+} from 'types/domain/import';

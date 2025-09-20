@@ -28,7 +28,7 @@ El endpoint atrapa errores de Supabase y responde `500` en caso de fallo, dejand
 
 ## 🗃️ Normalización y tipos
 - Los mapeos `normalize*` transforman filas SQL (`types/dashboard-rows.ts`) a objetos ricos del dominio. Ejemplo: `normalizeIssue` agrega `comments: []`, asegura arrays para etiquetas, watchers y criterios.
-- `DashboardStateSnapshot` vive en `src/types/domain/dashboard/` y define la forma esperada por el store de Zustand.
+- `DashboardStateSnapshot` vive en `src/types/domain/` y define la forma esperada por el store de Zustand.
 
 ## 🔐 Seguridad y RLS
 - El esquema de tablas se define en `supabase/migrations/20250916045656_create_tables.sql` (24 tablas).

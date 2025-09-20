@@ -10,7 +10,7 @@ import {
   HealthStatus, 
   SprintStatus, 
   UserRole 
-} from '../../shared/common';
+} from '../shared/common';
 
 // Comentario de issue
 export interface IssueComment {
