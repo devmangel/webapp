@@ -1,12 +1,24 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Card, CardBody } from 'components/ui/Card';
-import type { FeedbackItem, Completion, FullImportResult } from 'types/domain/dashboard/import';
+import { 
+  ImportHeader, 
+  MarkdownEditor, 
+  ResultsPanel, 
+  ProcessingSteps,
+  type FullImportResult 
+} from 'components/import';
 
 interface ImportState {
   isLoading: boolean;
   result: FullImportResult | null;
+}
+
+interface ProcessingStep {
+  id: string;
+  label: string;
+  status: 'pending' | 'processing' | 'completed' | 'error';
+  description?: string;
 }
 
 // Usuario fijo para todas las operaciones
@@ -41,205 +53,13 @@ const exampleMarkdown = `# ÉPICA EP-01 — Registro & Autenticación
 * **BE-03** Emisor de emails transaccionales (plantillas verificación/reset).
 `;
 
-function FeedbackSection({ 
-  title, 
-  items, 
-  type 
-}: { 
-  title: string; 
-  items: FeedbackItem[]; 
-  type: 'error' | 'warning' | 'completion' 
-}) {
-  if (items.length === 0) return null;
-
-  const colorClasses = {
-    error: 'border-red-300 bg-red-50 text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200',
-    warning: 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-500/50 dark:bg-amber-500/10 dark:text-amber-200',
-    completion: 'border-green-300 bg-green-50 text-green-700 dark:border-green-500/40 dark:bg-green-500/10 dark:text-green-200'
-  };
-
-  const icons = {
-    error: '❌',
-    warning: '⚠️',
-    completion: '✨'
-  };
-
-  return (
-    <div className={`rounded-md border p-3 text-sm ${colorClasses[type]}`}>
-      <h4 className="font-semibold flex items-center gap-2">
-        <span>{icons[type]}</span>
-        {title}
-      </h4>
-      <ul className="mt-2 space-y-1">
-        {items.map((item, index) => (
-          <li key={index} className="text-xs">
-            <div className="flex flex-col gap-1">
-              <span>{item.message}</span>
-              {item.location && (
-                <span className="opacity-75">📍 {item.location}</span>
-              )}
-              {item.suggestion && (
-                <span className="opacity-75">💡 {item.suggestion}</span>
-              )}
-              {item.autoValue && (
-                <span className="opacity-75">🤖 Auto-completado: {item.autoValue}</span>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function CompletionSection({ completions }: { completions: Completion[] }) {
-  if (completions.length === 0) return null;
-
-  return (
-    <div className="rounded-md border border-blue-300 bg-blue-50 p-3 text-sm text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-200">
-      <h4 className="font-semibold flex items-center gap-2">
-        <span>🔧</span>
-        Mejoras aplicadas por IA
-      </h4>
-      <ul className="mt-2 space-y-1">
-        {completions.map((completion, index) => {
-          const displayValue = typeof completion.generated === 'number' 
-            ? `${completion.generated} puntos` 
-            : completion.generated;
-          
-          return (
-            <li key={index} className="text-xs">
-              <div className="flex flex-col gap-1">
-                <span className="font-medium">{completion.target}</span>
-                <span className="opacity-75">{completion.type}: {displayValue}</span>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
-function ImportResultDisplay({ result }: { result: FullImportResult | null }) {
-  if (!result) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-          Pega tu markdown y presiona el botón para procesar con IA
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Información del Proyecto Creado */}
-      {result.success && result.projectId && result.summary && (
-        <div className="rounded-md border border-blue-300 bg-blue-50 p-4 text-sm text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-200">
-          <h4 className="font-semibold flex items-center gap-2 mb-2">
-            <span>🚀</span>
-            Proyecto creado automáticamente
-          </h4>
-          <div className="space-y-1 text-xs">
-            <p><span className="font-medium">Proyecto:</span> {result.summary.project}</p>
-            <p><span className="font-medium">ID:</span> {result.projectId}</p>
-            <p><span className="font-medium">Sprints generados:</span> {result.summary.sprints} sprints secuenciales</p>
-          </div>
-        </div>
-      )}
-
-      {/* Resumen de Elementos */}
-      {result.summary && (
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-            <CardBody>
-              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-                Sprints
-              </p>
-              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-                {result.summary.sprints}
-              </p>
-            </CardBody>
-          </Card>
-          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-            <CardBody>
-              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-                Épicas
-              </p>
-              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-                {result.summary.epics}
-              </p>
-            </CardBody>
-          </Card>
-          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-            <CardBody>
-              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-                Historias
-              </p>
-              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-                {result.summary.stories}
-              </p>
-            </CardBody>
-          </Card>
-          <Card className="border border-border-light/60 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-            <CardBody>
-              <p className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-                Tareas
-              </p>
-              <p className="mt-2 text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark">
-                {result.summary.tasks}
-              </p>
-            </CardBody>
-          </Card>
-        </div>
-      )}
-
-      {/* Feedback */}
-      {result.feedback && (
-        <div className="space-y-3">
-          <FeedbackSection
-            title="Errores críticos"
-            items={result.feedback.errors || []}
-            type="error"
-          />
-          <FeedbackSection
-            title="Advertencias"
-            items={result.feedback.warnings || []}
-            type="warning"
-          />
-          <CompletionSection completions={result.feedback.completions || []} />
-        </div>
-      )}
-
-      {/* Estado general */}
-      {result.success ? (
-        <div className="rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-700 dark:border-green-500/40 dark:bg-green-500/10 dark:text-green-200">
-          <h4 className="font-semibold">✅ Importación completada exitosamente</h4>
-          <div className="mt-2 space-y-1">
-            <p>Se creó automáticamente el proyecto <span className="font-medium">{result.summary?.project}</span></p>
-            <p>📊 Elementos generados: {result.summary?.sprints} sprints, {result.summary?.epics} épicas, {result.summary?.stories} historias, {result.summary?.tasks} tareas</p>
-            <p>👨‍💻 Todas las tareas fueron asignadas automáticamente al desarrollador especificado</p>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
-          <h4 className="font-semibold">❌ Error en la importación</h4>
-          <p className="mt-1">
-            La importación falló. Revisa los errores arriba y corrige el markdown antes de intentar de nuevo.
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function ImportPage() {
   const [markdown, setMarkdown] = useState(exampleMarkdown);
   const [importState, setImportState] = useState<ImportState>({
     isLoading: false,
     result: null,
   });
+  const [processingSteps, setProcessingSteps] = useState<ProcessingStep[]>([]);
 
   const stats = useMemo(() => {
     if (importState.result?.summary) {
@@ -251,10 +71,44 @@ export default function ImportPage() {
 
   const canImport = markdown.trim().length > 0 && !importState.isLoading;
 
+  const handleLoadExample = () => {
+    setMarkdown(exampleMarkdown);
+  };
+
+  const simulateProcessingSteps = () => {
+    const steps: ProcessingStep[] = [
+      { id: 'analysis', label: 'Analizando especificación', status: 'processing', description: 'Extrayendo estructura y elementos' },
+      { id: 'project', label: 'Creando proyecto', status: 'pending', description: 'Configuración inicial del proyecto' },
+      { id: 'sprints', label: 'Generando sprints', status: 'pending', description: 'Organizando trabajo en sprints' },
+      { id: 'epics', label: 'Procesando épicas', status: 'pending', description: 'Creando épicas y objetivos' },
+      { id: 'stories', label: 'Creando historias', status: 'pending', description: 'Generando historias de usuario' },
+      { id: 'tasks', label: 'Asignando tareas', status: 'pending', description: 'Distribuyendo tareas y estimaciones' }
+    ];
+    
+    setProcessingSteps(steps);
+
+    // Simular progreso secuencial
+    let currentIndex = 0;
+    const processNext = () => {
+      if (currentIndex < steps.length) {
+        setProcessingSteps(prev => prev.map((step, index) => {
+          if (index === currentIndex) return { ...step, status: 'completed' };
+          if (index === currentIndex + 1) return { ...step, status: 'processing' };
+          return step;
+        }));
+        currentIndex++;
+        setTimeout(processNext, 800);
+      }
+    };
+    
+    setTimeout(processNext, 500);
+  };
+
   const handleImport = async () => {
     if (!canImport) return;
 
     setImportState({ isLoading: true, result: null });
+    simulateProcessingSteps();
 
     try {
       const response = await fetch('/api/dashboard/import', {
@@ -275,6 +129,7 @@ export default function ImportPage() {
         isLoading: false,
         result,
       });
+      setProcessingSteps([]);
     } catch (error) {
       console.error('Error en importación:', error);
       setImportState({
@@ -301,94 +156,83 @@ export default function ImportPage() {
           }
         }
       });
+      setProcessingSteps(prev => prev.map(step => ({ ...step, status: 'error' as const })));
     }
   };
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-            Crear proyecto desde markdown con IA
-          </h1>
-          <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
-            Pega tu especificación en markdown y la IA creará automáticamente un proyecto completo con sprints, épicas, historias y tareas
-          </p>
-          <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
-            🤖 La IA creará un proyecto completo automáticamente con sprints secuenciales y asignación de tareas
-          </p>
-        </div>
-        <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          {stats}
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="space-y-8">
+          {/* Header moderno */}
+          <ImportHeader 
+            stats={stats}
+            isProcessing={importState.isLoading}
+            hasResult={!!importState.result}
+          />
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <Card className="border border-border-light/70 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <label className="text-xs font-semibold uppercase text-textSecondary-light dark:text-textSecondary-dark">
-              Especificación en Markdown
-            </label>
-            <textarea
-              value={markdown}
-              onChange={(event) => setMarkdown(event.target.value)}
-              rows={24}
-              className="mt-2 w-full rounded-md border border-border-light bg-white px-4 py-3 text-sm text-textPrimary-light focus:border-primary focus:outline-none dark:border-border-dark dark:bg-neutral-950 dark:text-textPrimary-dark"
-              placeholder="Pega aquí tu especificación en formato markdown"
-            />
-            
-            <div className="mt-4 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
+          {/* Layout principal */}
+          <div className="grid gap-8 lg:grid-cols-12">
+            {/* Editor de markdown - 7 columnas en desktop */}
+            <div className="lg:col-span-7 space-y-6">
+              <MarkdownEditor
+                value={markdown}
+                onChange={setMarkdown}
+                onLoadExample={handleLoadExample}
+                disabled={importState.isLoading}
+              />
+              
+              {/* Botón de acción principal */}
+              <div className="flex justify-center">
                 <button
                   type="button"
                   onClick={handleImport}
                   disabled={!canImport}
-                  className={`rounded-md px-6 py-2.5 text-sm font-semibold transition-all ${
+                  className={`group relative overflow-hidden rounded-xl px-8 py-4 text-base font-semibold transition-all duration-300 ${
                     canImport
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-xl transform hover:-translate-y-0.5'
-                      : 'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800 dark:text-neutral-600'
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white shadow-lg hover:shadow-2xl hover:scale-105 transform'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600'
                   }`}
                 >
-                  {importState.isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                        <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Procesando con IA...
-                    </span>
-                  ) : (
-                    '🚀 Crear Proyecto con IA'
+                  {canImport && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   )}
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={() => setMarkdown(exampleMarkdown)}
-                  className="rounded-md border border-border-light px-4 py-2 text-sm font-semibold text-textSecondary-light transition-colors hover:border-primary hover:text-primary dark:border-border-dark dark:text-textSecondary-dark"
-                >
-                  Cargar ejemplo
+                  <span className="relative flex items-center gap-3">
+                    {importState.isLoading ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                          <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Procesando con IA...
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xl">🚀</span>
+                        Crear Proyecto con IA
+                      </>
+                    )}
+                  </span>
                 </button>
               </div>
-              
-              <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
-                🤖 La IA creará un proyecto completo automáticamente con sprints secuenciales y asignación de tareas
-              </p>
             </div>
-          </CardBody>
-        </Card>
 
-        <Card className="border border-border-light/70 bg-white/95 dark:border-border-dark/60 dark:bg-neutral-900/70">
-          <CardBody>
-            <h2 className="text-base font-semibold text-textPrimary-light dark:text-textPrimary-dark">
-              Resultado del procesamiento
-            </h2>
-            <div className="mt-4">
-              <ImportResultDisplay result={importState.result} />
+            {/* Panel de resultados - 5 columnas en desktop */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Indicador de progreso durante procesamiento */}
+              {importState.isLoading && processingSteps.length > 0 && (
+                <ProcessingSteps steps={processingSteps} />
+              )}
+              
+              {/* Panel de resultados */}
+              <ResultsPanel
+                result={importState.result}
+                isLoading={importState.isLoading}
+              />
             </div>
-          </CardBody>
-        </Card>
-      </section>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

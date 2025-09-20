@@ -70,11 +70,11 @@ export class ImportOrchestrator {
       const projectAnalysis = projectAnalysisResult.data as ProjectAnalysis;
       
       // FASE 2: Validar permisos del usuario
-      // console.log('👤 Validando permisos de usuario...');
-      // const permissionsValid = await this.projectService.validateUserPermissions(request.uploaderId);
-      // if (!permissionsValid.canCreate) {
-      //   return this.buildFailureResult(result, permissionsValid.error || 'Usuario sin permisos');
-      // }
+      console.log('👤 Validando permisos de usuario...');
+      const permissionsValid = await this.projectService.validateUserPermissions(request.uploaderId);
+      if (!permissionsValid.canCreate) {
+        return this.buildFailureResult(result, permissionsValid.error || 'Usuario sin permisos');
+      }
 
       // FASE 3: Crear proyecto
       console.log('📂 Creando proyecto...');
