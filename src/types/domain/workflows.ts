@@ -2,14 +2,19 @@
  * Tipos relacionados con flujos de trabajo, importación, IA y actividad del dashboard
  */
 
-import { 
-  ActivityAction, 
-  AuditScope, 
-  ConfidenceLevel, 
-  AiMode, 
-  IssueSubType 
-} from '../shared/common';
-import { Epic, Issue, Sprint, Project, TeamMember, AssignmentRule } from './entities';
+import {
+  ActivityAction,
+  AuditScope,
+  ConfidenceLevel,
+  AiMode,
+  IssueSubType,
+  Epic,
+  Issue,
+  Sprint,
+  Project,
+  TeamMember,
+  AssignmentRule,
+} from '.';
 
 // Actividad de issue
 export interface IssueActivity {

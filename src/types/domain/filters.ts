@@ -2,7 +2,7 @@
  * Tipos relacionados con filtros y búsquedas del dashboard
  */
 
-import { IssueType } from '../shared/common';
+import { IssueType } from '.';
 import { BaseFilters } from '../shared/api';
 
 // Filtros específicos del dashboard
