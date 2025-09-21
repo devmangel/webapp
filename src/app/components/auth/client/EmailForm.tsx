@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { signInAction } from '../../../lib/auth/server'
+import { signIn } from 'next-auth/react'
 
 interface EmailFormProps {
   callbackUrl?: string
@@ -54,8 +54,17 @@ export function EmailForm({ callbackUrl }: EmailFormProps) {
     }
 
     try {
-      await signInAction('email', { email, callbackUrl })
-      setIsSubmitted(true)
+      const result = await signIn('email', { 
+        email, 
+        callbackUrl: callbackUrl || '/dashboard',
+        redirect: false 
+      })
+      
+      if (result?.error) {
+        setError('Error enviando el enlace. Intenta nuevamente.')
+      } else {
+        setIsSubmitted(true)
+      }
     } catch (error) {
       console.error('Error sending magic link:', error)
       setError('Error enviando el enlace. Intenta nuevamente.')

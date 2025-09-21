@@ -20,6 +20,11 @@ export interface UserSession {
         name?: string | null
         email?: string | null
         image?: string | null
+        role?: string
+        timezone?: string
+        capacityPerSprint?: number
+        skills?: string[]
+        active?: boolean
     }
     expires: string
 }
@@ -29,4 +34,44 @@ export interface NextAuthSignInOptions {
     redirect?: boolean
     email?: string
     [key: string]: unknown
+}
+
+// Extender los tipos de NextAuth
+declare module 'next-auth' {
+    interface Session {
+        user: {
+            id: string
+            name?: string | null
+            email?: string | null
+            image?: string | null
+            role?: string
+            timezone?: string
+            capacityPerSprint?: number
+            skills?: string[]
+            active?: boolean
+        }
+    }
+
+    interface User {
+        id: string
+        name?: string | null
+        email?: string | null
+        image?: string | null
+        role?: string
+        timezone?: string
+        capacityPerSprint?: number
+        skills?: string[]
+        active?: boolean
+    }
+}
+
+declare module 'next-auth/jwt' {
+    interface JWT {
+        userId?: string
+        role?: string
+        timezone?: string
+        capacityPerSprint?: number
+        skills?: string[]
+        active?: boolean
+    }
 }

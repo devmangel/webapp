@@ -1,7 +1,8 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
-import { getCurrentSession } from '../../../lib/auth/server'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../../../lib/auth/config'
 import { AuthLayout } from '../shared/AuthLayout'
 import { AuthCard } from '../shared/AuthCard'
 import { LoginForm } from '../client/LoginForm'
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export async function LoginPage({ searchParams }: AuthPageProps) {
   // Redirect authenticated users
-  const session = await getCurrentSession()
+  const session = await getServerSession(authOptions)
   
   // Await searchParams for Next.js 15+
   const resolvedSearchParams = searchParams ? await searchParams : undefined

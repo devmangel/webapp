@@ -1,6 +1,6 @@
 'use client'
 
-import { signOutAction } from '../../lib/auth/server'
+import { signOut } from "next-auth/react";
 
 interface SignOutButtonProps {
   callbackUrl?: string
@@ -15,12 +15,12 @@ export default function SignOutButton({
   children,
   disabled = false
 }: SignOutButtonProps) {
-  
+
   const handleSignOut = async () => {
     if (disabled) return
-    
+
     try {
-      await signOutAction(callbackUrl)
+      await signOut({ callbackUrl })
     } catch (error) {
       console.error('Error cerrando sesión:', error)
     }

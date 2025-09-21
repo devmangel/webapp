@@ -47,7 +47,7 @@ export function NotFound() {
             <Typography variant="h3" className="mt-6 !leading-snug lg:text-3xl text-foreground-light">
               Sorry, We Misplaced That Page
             </Typography>
-            <Typography variant="body1" className="mt-4 mb-6 w-full md:max-w-full lg:mb-12 lg:max-w-3xl text-gray-600">
+            <Typography className="mt-4 mb-6 w-full md:max-w-full lg:mb-12 lg:max-w-3xl text-gray-600">
               Our digital librarian seems to have misplaced the page you
               requested. Stay with us, and we&apos;ll help you rediscover it.{" "}
               <br /> <br />

@@ -1,7 +1,7 @@
 import { AuthProvider } from 'types/auth'
 
 // Constantes de configuración
-export const DEFAULT_CALLBACK_URL = '/'
+export const DEFAULT_CALLBACK_URL = 'http://localhost:3550'
 export const DEFAULT_SIGNIN_URL = '/auth/signin'
 
 export const AUTH_PROVIDERS: Record<AuthProvider, string> = {

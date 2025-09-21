@@ -413,11 +413,7 @@ function InlineFilters() {
 export function EnhancedHeader({
   mobileMenuOpen,
   onToggleMobileMenu
-}: Omit<EnhancedHeaderProps, 'activeProjectId' | 'projects'>) {
-  const activeProjectId = useDashboardStore((state) => state.activeProjectId);
-  const projects = useDashboardStore((state) => state.projects);
-  const currentProject = projects[activeProjectId];
-  console.log('Current Project in Header:', currentProject);
+}: Omit<EnhancedHeaderProps, 'activeProjectId' | 'projects'>) {  
 
   return (
     <header className="bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]">
