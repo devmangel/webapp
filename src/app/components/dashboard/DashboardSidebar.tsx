@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { Typography } from '../ui/Typography';
 import { Button } from '../ui/Button';
 import { formatDate } from '../utils/format';
+import SidebarSignOutButton from './SidebarSignOutButton';
 
 interface Project {
   id: string;
@@ -144,6 +145,11 @@ export function DashboardSidebar({
             })}
           </div>
         </nav>
+
+        {/* Footer con botón de cerrar sesión */}
+        <div className="border-t border-gray-200 dark:border-gray-800 p-4">
+          <SidebarSignOutButton collapsed={collapsed} />
+        </div>
       </motion.aside>
 
       {/* Mobile Navigation */}
@@ -178,6 +184,10 @@ export function DashboardSidebar({
                   </Link>
                 );
               })}
+            </div>
+            {/* Botón de cerrar sesión para móvil */}
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+              <SidebarSignOutButton collapsed={false} />
             </div>
           </nav>
         </motion.div>

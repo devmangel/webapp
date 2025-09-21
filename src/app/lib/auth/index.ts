@@ -2,18 +2,9 @@
 // SERVER FUNCTIONS
 // ======================
 export {
-  getCurrentSession,
   isAuthenticated,
   getCurrentUser,
-  signInAction,
-  signOutAction,
-  redirectAfterAuth,
   requireAuth,
-  redirectToSignIn,
-  redirectToHome,
-  redirectToDashboard,
-  hasRole,
-  getUserProfile
 } from './server'
 
 // ======================

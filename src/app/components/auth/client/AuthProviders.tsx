@@ -36,7 +36,7 @@ const AppleIcon = () => (
   </svg>
 )
 
-export async function AuthProviders({ }: AuthProvidersProps) {
+export function AuthProviders({ }: AuthProvidersProps) {
 
 
   const providers = [
