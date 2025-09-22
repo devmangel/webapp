@@ -97,10 +97,12 @@ export class ImportOrchestrator {
       } catch (error) {
         // Log el error pero no fallar la importación completa
         console.warn('⚠️ Advertencia: No se pudo registrar la membresía del owner:', error);
-        result.feedback.warnings.push({
-          type: 'SUGGESTION',
-          message: 'El proyecto se creó pero no se pudo registrar la membresía automáticamente'
-        });
+        if (result.feedback) {
+          result.feedback.warnings.push({
+            type: 'SUGGESTION',
+            message: 'El proyecto se creó pero no se pudo registrar la membresía automáticamente'
+          });
+        }
       }
 
       // FASE 4: Generar sprints por épicas
@@ -658,7 +660,17 @@ export class ImportOrchestrator {
     projectId?: string
   ): FullImportResult {
     result.success = false;
-    result.feedback!.errors.push({
+    
+    // Asegurar que feedback existe
+    if (!result.feedback) {
+      result.feedback = {
+        errors: [],
+        warnings: [],
+        completions: []
+      };
+    }
+    
+    result.feedback.errors.push({
       type: 'CRITICAL',
       message: errorMessage
     });
