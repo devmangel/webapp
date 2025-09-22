@@ -1,5 +1,6 @@
 import { MarkdownProcessor } from '../ai/markdown-processor';
 import { ProjectCreationService } from 'modules/projects/services/project-creation.service';
+import { ProjectMembersService } from 'modules/projects/services/project-members.service';
 import { SprintGenerationService } from 'modules/sprints/services/sprint-generation.service';
 import { EpicProcessingService } from 'modules/epics/services/epic-processing.service';
 import { StoryProcessingService } from 'modules/issues/services/story-processing.service';
@@ -27,6 +28,7 @@ const FIXED_DEVELOPER_ID = '06aec8c6-b939-491b-b711-f04d7670e045';
  */
 export class ImportOrchestrator {
   private projectService = new ProjectCreationService();
+  private projectMembersService = new ProjectMembersService();
   private sprintService = new SprintGenerationService();
   private epicService = new EpicProcessingService();
   private storyService = new StoryProcessingService();
@@ -87,6 +89,19 @@ export class ImportOrchestrator {
 
       const projectCreation = projectCreationResult.data as ProjectCreationResult;
       projectId = projectCreation.projectId;
+
+      // FASE 3.1: Registrar al usuario como owner/admin del proyecto
+      console.log('👤 Registrando usuario como owner del proyecto...');
+      try {
+        await this.registerProjectOwnership(projectId, request.uploaderId);
+      } catch (error) {
+        // Log el error pero no fallar la importación completa
+        console.warn('⚠️ Advertencia: No se pudo registrar la membresía del owner:', error);
+        result.feedback.warnings.push({
+          type: 'SUGGESTION',
+          message: 'El proyecto se creó pero no se pudo registrar la membresía automáticamente'
+        });
+      }
 
       // FASE 4: Generar sprints por épicas
       console.log('🏃‍♂️ Generando sprints...');
@@ -183,6 +198,20 @@ export class ImportOrchestrator {
       console.error('❌ Error crítico en importación:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       return this.buildFailureResult(result, `Error crítico: ${errorMessage}`, projectId);
+    }
+  }
+
+  /**
+   * Registra al usuario como owner/admin del proyecto creado
+   */
+  private async registerProjectOwnership(projectId: string, userId: string): Promise<void> {
+    try {
+      console.log(`📝 Registrando usuario ${userId} como owner del proyecto ${projectId}...`);
+      await this.projectMembersService.registerProjectOwner(projectId, userId);
+      console.log('✅ Usuario registrado exitosamente como owner del proyecto');
+    } catch (error) {
+      console.error('❌ Error registrando ownership del proyecto:', error);
+      throw error;
     }
   }
 

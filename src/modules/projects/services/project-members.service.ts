@@ -9,6 +9,10 @@ import type {
   ProjectMemberRole,  
 } from '../types';
 import { ProjectMemberEntity } from '../entities/project-member.entity';
+import type {
+  ProjectMemberInsert,
+  ProjectMemberUpdate,
+} from '../interface/ProjectMemberDatabaseTypes';
 
 interface InviteUserToProjectParams {
   projectId: string;
@@ -32,6 +36,61 @@ interface RemoveUserFromProjectParams {
 
 export class ProjectMembersService {
   private supabase = createSupabaseServerClient();
+
+  /**
+   * Registra automáticamente al creador del proyecto como ADMIN activo
+   * Este método se usa durante la creación del proyecto, sin validaciones previas
+   */
+  async registerProjectOwner(projectId: string, userId: string): Promise<void> {
+    try {
+      // Verificar que no exista ya una membresía para este usuario en este proyecto
+      const { data: existingMembership } = await this.supabase
+        .schema('public')
+        .from('project_members')
+        .select('id, status')
+        .eq('project_id', projectId)
+        .eq('user_id', userId)
+        .single();
+
+      if (existingMembership) {
+        // Si ya existe, solo actualizamos el status y rol para asegurar consistencia
+        const updateData: ProjectMemberUpdate = {
+          role: 'ADMIN',
+          status: 'active',
+          joined_at: new Date().toISOString()
+        };
+        
+        await this.supabase
+          .schema('public')
+          .from('project_members')
+          .update(updateData)
+          .eq('project_id', projectId)
+          .eq('user_id', userId);
+      } else {
+        // Crear nueva membresía como owner/admin
+        const insertData: ProjectMemberInsert = {
+          project_id: projectId,
+          user_id: userId,
+          role: 'ADMIN',
+          status: 'active',
+          joined_at: new Date().toISOString(),
+          // No hay invited_by porque es el creador
+        };
+
+        const { error } = await this.supabase
+          .schema('public')
+          .from('project_members')
+          .insert(insertData);
+
+        if (error) {
+          throw new Error(`Error al registrar owner del proyecto: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.error('[ProjectMembersService] Error registering project owner:', error);
+      throw error;
+    }
+  }
 
   /**
    * Invita un usuario a un proyecto por email
