@@ -2,7 +2,7 @@
  * Servicio para gestionar membresías de proyectos
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createSupabaseServerClient } from 'app/lib/supabase/server-client';
 import type { 
   ProjectMember, 
   ProjectMemberWithDetails,
@@ -31,14 +31,7 @@ interface RemoveUserFromProjectParams {
 }
 
 export class ProjectMembersService {
-  private supabase;
-
-  constructor(supabaseUrl?: string, supabaseKey?: string) {
-    this.supabase = createClient(
-      supabaseUrl || process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      supabaseKey || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-    );
-  }
+  private supabase = createSupabaseServerClient();
 
   /**
    * Invita un usuario a un proyecto por email

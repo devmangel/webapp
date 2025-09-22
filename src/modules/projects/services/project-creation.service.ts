@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '../../../app/lib/supabase/server-client';
+import { createSupabaseServerClient } from 'app/lib/supabase/server-client';
 import type { Database } from 'types/database/schema';
 import type { ProjectMetadata, ProjectCreationResult } from 'types/domain/import';
 
