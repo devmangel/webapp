@@ -46,7 +46,7 @@
 | **Backend** | Supabase | BaaS con RLS y real-time |
 | **Frontend** | Next.js 15 | App Router + Server Components |
 | **ORM** | Supabase Client | Type-safe queries + real-time |
-| **Auth** | Supabase Auth | Autenticación y autorización |
+| **Auth** | Next Auth | Autenticación y autorización |
 
 ---
 
@@ -63,13 +63,13 @@ graph TD
     E --> F[🤖 Capa de IA y Analytics]
     F --> G[⚙️ Capa de Sistema]
     
-    style A fill:#ff6b6b
-    style B fill:#4ecdc4
-    style C fill:#45b7d1
-    style D fill:#f9ca24
-    style E fill:#f0932b
-    style F fill:#eb4d4b
-    style G fill:#6c5ce7
+    style A fill:#1c1e1f
+    style B fill:#1c1e1f
+    style C fill:#1c1e1f
+    style D fill:#1c1e1f
+    style E fill:#1c1e1f
+    style F fill:#1c1e1f
+    style G fill:#1c1e1f
 ```
 
 ### Distribución de Tablas por Capa
@@ -94,7 +94,7 @@ graph TD
 ```mermaid
 erDiagram
     USERS {
-        uuid user_id PK
+        uuid id PK
         text name
         citext email UK
         text role
@@ -121,7 +121,7 @@ erDiagram
     PROJECT_MEMBERS {
         uuid id PK
         uuid project_id FK
-        uuid user_id FK
+        uuid id FK
         text role
         uuid invited_by FK
         timestamp invited_at
@@ -222,7 +222,7 @@ erDiagram
 
 | 📊 Tabla | 🔑 Primary Key | 🎯 Tipo | 📈 Estrategia | 🚀 Beneficios |
 |----------|----------------|---------|---------------|---------------|
-| `users` | `user_id` | `UUID` | `gen_random_uuid()` | Escalabilidad, Privacy |
+| `users` | `id` | `UUID` | `gen_random_uuid()` | Escalabilidad, Privacy |
 | `projects` | `id` | `UUID` | `gen_random_uuid()` | Distribuido, Seguro |
 | `issues` | `id` | `UUID` | `gen_random_uuid()` | No secuencial, Único |
 | `epics` | `id` | `UUID` | `gen_random_uuid()` | Cross-DB compatible |
@@ -238,10 +238,10 @@ graph LR
     
     C[UUID] -->|✅| D[Globally unique<br/>Non-sequential<br/>Privacy-first<br/>Distributed-ready]
     
-    style A fill:#ffcdd2
-    style B fill:#ffcdd2
-    style C fill:#c8e6c9
-    style D fill:#c8e6c9
+    style A fill:#1c1e1f
+    style B fill:#1c1e1f
+    style C fill:#1c1e1f
+    style D fill:#1c1e1f
 ```
 
 ### Unique Constraints Adicionales
@@ -262,7 +262,7 @@ graph LR
 ```mermaid
 graph TB
     subgraph "👥 Dominio de Usuarios"
-        U[users.user_id]
+        U[users.id]
     end
     
     subgraph "📁 Dominio de Proyectos"
@@ -271,7 +271,7 @@ graph TB
         
         P -.->|owner_id| U
         PM -.->|project_id| P
-        PM -.->|user_id| U
+        PM -.->|id| U
         PM -.->|invited_by| U
     end
     
@@ -310,15 +310,15 @@ graph TB
 
 | 🔗 Relación | 📊 Cardinalidad | 🎯 Significado | 🔒 Constraint |
 |-------------|-----------------|----------------|---------------|
-| `users` → `projects` | 1:N | Un usuario puede ser owner de múltiples proyectos | `projects.owner_id → users.user_id` |
+| `users` → `projects` | 1:N | Un usuario puede ser owner de múltiples proyectos | `projects.owner_id → users.id` |
 | `projects` → `project_members` | 1:N | Un proyecto tiene múltiples miembros | `project_members.project_id → projects.id` |
-| `users` → `project_members` | 1:N | Un usuario puede ser miembro de múltiples proyectos | `project_members.user_id → users.user_id` |
+| `users` → `project_members` | 1:N | Un usuario puede ser miembro de múltiples proyectos | `project_members.id → users.id` |
 | `projects` → `epics` | 1:N | Un proyecto contiene múltiples epics | `epics.project_id → projects.id` |
 | `epics` → `issues` | 1:N | Un epic agrupa múltiples issues | `issues.epic_id → epics.id` (nullable) |
 | `issues` → `issues` | 1:N | Issues pueden tener sub-issues | `issues.parent_issue_id → issues.id` (nullable) |
 | `sprints` → `issues` | 1:N | Un sprint contiene múltiples issues | `issues.sprint_id → sprints.id` (nullable) |
-| `users` → `issues` | 1:N (assignee) | Un usuario puede ser assignee de múltiples issues | `issues.assignee_id → users.user_id` (nullable) |
-| `users` → `issues` | 1:N (reporter) | Un usuario puede reportar múltiples issues | `issues.reporter_id → users.user_id` (nullable) |
+| `users` → `issues` | 1:N (assignee) | Un usuario puede ser assignee de múltiples issues | `issues.assignee_id → users.id` (nullable) |
+| `users` → `issues` | 1:N (reporter) | Un usuario puede reportar múltiples issues | `issues.reporter_id → users.id` (nullable) |
 
 ### Constraints de Integridad Referencial
 
@@ -326,15 +326,15 @@ graph TB
 -- Constraints principales implementadas
 ALTER TABLE projects 
 ADD CONSTRAINT fk_projects_owner_id 
-FOREIGN KEY (owner_id) REFERENCES users(user_id);
+FOREIGN KEY (owner_id) REFERENCES users(id);
 
 ALTER TABLE project_members 
 ADD CONSTRAINT fk_project_members_project_id 
 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE project_members 
-ADD CONSTRAINT fk_project_members_user_id 
-FOREIGN KEY (user_id) REFERENCES users(user_id);
+ADD CONSTRAINT fk_project_members_id 
+FOREIGN KEY (id) REFERENCES users(id);
 
 ALTER TABLE issues 
 ADD CONSTRAINT fk_issues_project_id 
@@ -382,14 +382,14 @@ graph TD
         S2 -.-> I3
     end
     
-    style P fill:#e3f2fd
-    style E1 fill:#fff3e0
-    style E2 fill:#fff3e0
-    style I1 fill:#e8f5e8
-    style I2 fill:#e8f5e8
-    style I3 fill:#e8f5e8
-    style S1 fill:#f3e5f5
-    style S2 fill:#f3e5f5
+    style P fill:#1c1e1f
+    style E1 fill:#1c1e1f
+    style E2 fill:#1c1e1f
+    style I1 fill:#1c1e1f
+    style I2 fill:#1c1e1f
+    style I3 fill:#1c1e1f
+    style S1 fill:#1c1e1f
+    style S2 fill:#1c1e1f
 ```
 
 ### 👥 Dominio de Colaboración
@@ -486,11 +486,11 @@ graph TD
     F --> L[created_at: When?]
     F --> M[ip_address: From where?]
     
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style G fill:#e8f5e8
-    style H fill:#e8f5e8
-    style I fill:#e8f5e8
+    style A fill:#1c1e1f
+    style E fill:#1c1e1f
+    style G fill:#1c1e1f
+    style H fill:#1c1e1f
+    style I fill:#1c1e1f
 ```
 
 **Implementación:**
@@ -556,9 +556,9 @@ graph LR
     B -->|Restore Action| A
     B -->|Hard Delete| C[💀 Physically Removed]
     
-    style A fill:#c8e6c9
-    style B fill:#ffecb3
-    style C fill:#ffcdd2
+    style A fill:#1c1e1f
+    style B fill:#1c1e1f
+    style C fill:#1c1e1f
 ```
 
 **Implementación recomendada:**
@@ -614,7 +614,7 @@ WHERE skills->'level' = '"senior"'
 -- Agregar nueva skill
 UPDATE users 
 SET skills = jsonb_set(skills, '{certifications}', '["AWS", "GCP"]')
-WHERE user_id = 'user-123';
+WHERE id = 'user-123';
 ```
 
 ---
@@ -721,7 +721,7 @@ CREATE INDEX CONCURRENTLY idx_audit_log_actor_created
 ON audit_log(actor_id, created_at DESC);
 
 CREATE INDEX CONCURRENTLY idx_project_members_user_status 
-ON project_members(user_id, status) WHERE status = 'active';
+ON project_members(id, status) WHERE status = 'active';
 
 -- Índices compuestos para queries frecuentes
 CREATE INDEX CONCURRENTLY idx_issues_project_epic_status 
@@ -876,7 +876,7 @@ USING (
   project_id IN (
     SELECT project_id 
     FROM project_members 
-    WHERE user_id = auth.uid() 
+    WHERE id = auth.uid() 
       AND status = 'active'
   )
 );
@@ -920,37 +920,37 @@ graph TD
     
     B -->|❌ No Verificado| G[Rechazar Solicitud]
     
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style D fill:#ffecb3
-    style E fill:#c8e6c9
-    style F fill:#a5d6a7
-    style G fill:#ffcdd2
+    style A fill:#1c1e1f
+    style C fill:#1c1e1f
+    style D fill:#1c1e1f
+    style E fill:#1c1e1f
+    style F fill:#1c1e1f
+    style G fill:#1c1e1f
 ```
 
 **Anonización de Datos:**
 ```sql
 -- Función para anonimizar datos de usuario eliminado
-CREATE OR REPLACE FUNCTION anonymize_user_data(target_user_id UUID)
+CREATE OR REPLACE FUNCTION anonymize_user_data(target_id UUID)
 RETURNS void AS $$
 BEGIN
   -- Anonimizar datos personales en users
   UPDATE users 
   SET 
     name = 'Usuario Eliminado',
-    email = 'deleted_' || target_user_id || '@deleted.local',
+    email = 'deleted_' || target_id || '@deleted.local',
     skills = NULL,
     active = false
-  WHERE user_id = target_user_id;
+  WHERE id = target_id;
   
   -- Mantener audit trail pero anonimizar metadata sensible
   UPDATE audit_log 
   SET metadata = COALESCE(metadata, '{}') || '{"user_anonymized": true}'
-  WHERE actor_id = target_user_id;
+  WHERE actor_id = target_id;
   
   -- Log de la acción de anonimización
   INSERT INTO audit_log (actor_id, action, scope, target_id, metadata)
-  VALUES (NULL, 'anonymized', 'USER', target_user_id, 
+  VALUES (NULL, 'anonymized', 'USER', target_id, 
     JSON_BUILD_OBJECT('anonymized_at', NOW()));
 END;
 $$ LANGUAGE plpgsql;
@@ -986,7 +986,7 @@ SELECT
   u.email,
   u.name
 FROM suspicious_activity sa
-LEFT JOIN users u ON sa.actor_id = u.user_id
+LEFT JOIN users u ON sa.actor_id = u.id
 WHERE action_count > 10 
    OR scopes_affected > 3
 ORDER BY action_count DESC;

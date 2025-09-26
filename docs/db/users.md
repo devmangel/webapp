@@ -1,7 +1,7 @@
                                     Table "public.users"
        Column        |           Type           | Collation | Nullable |      Default      
 ---------------------+--------------------------+-----------+----------+-------------------
- user_id                  | uuid                     |           | not null | gen_random_uuid()
+ id                  | uuid                     |           | not null | gen_random_uuid()
  name                | text                     |           | not null | 
  email               | citext                   |           | not null | 
  role                | text                     |           | not null | 
