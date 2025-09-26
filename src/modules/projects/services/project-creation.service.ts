@@ -15,13 +15,13 @@ export class ProjectCreationService {
    * Crea un nuevo proyecto basado en metadatos extraídos por IA
    */
   async createProject(
-    metadata: ProjectMetadata, 
+    metadata: ProjectMetadata,
     ownerId: string
   ): Promise<{ result?: ProjectCreationResult; error?: string }> {
     try {
       // Generar código único del proyecto
       const uniqueCode = await this.generateUniqueCode(metadata.suggestedCode);
-      
+
       // Preparar datos del proyecto
       const projectData: ProjectInsert = {
         name: metadata.name,
@@ -29,7 +29,7 @@ export class ProjectCreationService {
         description: metadata.description || `Proyecto generado automáticamente: ${metadata.name}`,
         owner_id: ownerId,
         status: 'ACTIVE',
-        color: this.generateProjectColor(), // Color aleatorio
+        color: this.generateProjectColor(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -60,8 +60,8 @@ export class ProjectCreationService {
 
     } catch (error) {
       console.error('Error en createProject:', error);
-      return { 
-        error: error instanceof Error ? error.message : 'Error desconocido al crear proyecto' 
+      return {
+        error: error instanceof Error ? error.message : 'Error desconocido al crear proyecto'
       };
     }
   }
@@ -148,7 +148,7 @@ export class ProjectCreationService {
    */
   async validateUserPermissions(userId: string): Promise<{ canCreate: boolean; error?: string }> {
     try {
-        
+
       // Verificar que el usuario existe y está activo
       const { data: user, error } = await this.supabase
         .from('users')

@@ -34,7 +34,7 @@ const ProcessingOverlay = memo(function ProcessingOverlay({
       id: 'analysis',
       label: 'Analizando especificación',
       description: 'La IA está leyendo y comprendiendo tu markdown',
-      duration: 30,
+      duration: 15,
       progress: 15,
       icon: (
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@ const ProcessingOverlay = memo(function ProcessingOverlay({
       id: 'extraction',
       label: 'Extrayendo estructura',
       description: 'Identificando épicas, historias y tareas',
-      duration: 35,
+      duration: 25,
       progress: 25,
       icon: (
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@ const ProcessingOverlay = memo(function ProcessingOverlay({
       id: 'sprints',
       label: 'Generando sprints',
       description: 'Organizando trabajo en iteraciones secuenciales',
-      duration: 50,
+      duration: 20,
       progress: 50,
       icon: (
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,7 +84,7 @@ const ProcessingOverlay = memo(function ProcessingOverlay({
       id: 'epics',
       label: 'Procesando épicas',
       description: 'Creando objetivos y metas del proyecto',
-      duration: 40,
+      duration: 20,
       progress: 65,
       icon: (
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +96,7 @@ const ProcessingOverlay = memo(function ProcessingOverlay({
       id: 'stories',
       label: 'Creando historias',
       description: 'Generando historias de usuario detalladas',
-      duration: 35,
+      duration: 15,
       progress: 80,
       icon: (
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ const ProcessingOverlay = memo(function ProcessingOverlay({
       id: 'tasks',
       label: 'Distribuyendo tareas',
       description: 'Asignando tareas y estimando esfuerzo',
-      duration: 25,
+      duration: 15,
       progress: 90,
       icon: (
         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

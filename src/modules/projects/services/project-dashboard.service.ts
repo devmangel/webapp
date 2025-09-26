@@ -41,10 +41,12 @@ export class ProjectDashboardService {
     try {
       // 1. Obtener proyectos accesibles al usuario
       const accessibleProjects = await this.getUserAccessibleProjects(userId);
+      console.log('Accessible projects for user:', accessibleProjects.map(p => p.id));
       const projectIds = accessibleProjects.map(p => p.id);
 
       if (projectIds.length === 0) {
-        // Usuario sin proyectos - retornar estado vacío
+        // Usuario sin proyectos - retornar estado
+        console.log('User has no accessible projects, returning empty dashboard snapshot.');
         return this.getEmptyDashboardSnapshot();
       }
 
@@ -104,15 +106,17 @@ export class ProjectDashboardService {
     const { data: projects, error } = await this.supabase
       .from('projects')
       .select(`
-        *,
-        project_members!project_members_project_id_fkey!inner(
-          user_id,
-          status
-        )
-      `)
+    *,
+    project_members!inner(
+      user_id,
+      status,
+      role
+    )
+  `)
       .eq('project_members.user_id', userId)
       .eq('project_members.status', 'active')
       .order('created_at', { ascending: true });
+
 
     if (error) {
       console.error('[ProjectDashboardService] Error fetching accessible projects:', error);
@@ -528,8 +532,8 @@ export class ProjectDashboardService {
   private normalizeAssignmentRule(row: AssignmentRulesRow): AssignmentRule {
     const preferredRoles = Array.isArray(row.preferred_roles)
       ? row.preferred_roles.filter((role): role is AssignmentRule['preferredRoles'][number] =>
-          role === 'PM' || role === 'CONTRIBUTOR',
-        )
+        role === 'PM' || role === 'CONTRIBUTOR',
+      )
       : [];
     const preferredSkills = Array.isArray(row.preferred_skills) ? row.preferred_skills : [];
     return {

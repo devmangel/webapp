@@ -3,16 +3,17 @@
  */
 
 import { createSupabaseServerClient } from 'app/lib/supabase/server-client';
-import type { 
-  ProjectMember, 
+import type {
+  ProjectMember,
   ProjectMemberWithDetails,
-  ProjectMemberRole,  
+  ProjectMemberRole,
 } from '../types';
 import { ProjectMemberEntity } from '../entities/project-member.entity';
 import type {
   ProjectMemberInsert,
   ProjectMemberUpdate,
 } from '../interface/ProjectMemberDatabaseTypes';
+import { UuidService } from 'modules/uuid/services/uuid.service';
 
 interface InviteUserToProjectParams {
   projectId: string;
@@ -36,6 +37,7 @@ interface RemoveUserFromProjectParams {
 
 export class ProjectMembersService {
   private supabase = createSupabaseServerClient();
+  private uuidService = new UuidService();
 
   /**
    * Registra automáticamente al creador del proyecto como ADMIN activo
@@ -59,7 +61,7 @@ export class ProjectMembersService {
           status: 'active',
           joined_at: new Date().toISOString()
         };
-        
+
         await this.supabase
           .schema('public')
           .from('project_members')
@@ -69,12 +71,14 @@ export class ProjectMembersService {
       } else {
         // Crear nueva membresía como owner/admin
         const insertData: ProjectMemberInsert = {
+          id: this.uuidService.generateV4(),
           project_id: projectId,
           user_id: userId,
           role: 'ADMIN',
           status: 'active',
-          joined_at: new Date().toISOString(),
-          // No hay invited_by porque es el creador
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+
         };
 
         const { error } = await this.supabase

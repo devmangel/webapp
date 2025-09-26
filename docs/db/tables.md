@@ -1,22 +1,18 @@
  Schema |         Name          | Type  |  Owner   
 --------+-----------------------+-------+----------
- public | activity_stream       | table | postgres
  public | ai_runs               | table | postgres
  public | ai_suggestions        | table | postgres
- public | assignment_rules      | table | postgres
  public | audit_log             | table | postgres
  public | backlog_imports       | table | postgres
  public | capacity_snapshots    | table | postgres
  public | checklists            | table | postgres
  public | epics                 | table | postgres
- public | integration_events    | table | postgres
  public | issue_attachments     | table | postgres
  public | issue_comments        | table | postgres
  public | issue_dependencies    | table | postgres
  public | issue_history         | table | postgres
  public | issue_watchers        | table | postgres
  public | issues                | table | postgres
- public | label_directory       | table | postgres
  public | notifications         | table | postgres
  public | prioritization_scores | table | postgres
  public | project_members       | table | postgres

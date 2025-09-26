@@ -18,6 +18,7 @@ export async function GET() {
     const dashboardService = new ProjectDashboardService();
 
     // 3. Obtener snapshot filtrado por usuario
+    console.log('Fetching dashboard snapshot for user:', currentUser.id);
     const dashboardData = await dashboardService.getUserDashboardSnapshot(currentUser.id);
 
     return NextResponse.json(dashboardData, { status: 200 });
